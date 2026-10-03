@@ -2,344 +2,875 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Strength Checker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<title>Advanced Password Strength Checker</title>
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+<style>
 
-        .container {
-            width: 90%;
-            max-width: 600px;
-            background: #1e293b;
-            padding: 35px;
-            border-radius: 18px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-        }
+* {
+    box-sizing: border-box;
+}
 
-        h1 {
-            margin-top: 0;
-            text-align: center;
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #f8fafc;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 15px;
+}
 
-        .description {
-            text-align: center;
-            color: #94a3b8;
-            margin-bottom: 30px;
-        }
+.container {
+    width: 100%;
+    max-width: 750px;
+}
 
-        .password-box {
-            display: flex;
-            gap: 10px;
-        }
+.card {
+    background: #1e293b;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.35);
+}
 
-        input {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
-            border: 2px solid #475569;
-            border-radius: 10px;
-            background: #0f172a;
-            color: white;
-            outline: none;
-        }
+h1 {
+    text-align: center;
+    margin-top: 0;
+}
 
-        input:focus {
-            border-color: #60a5fa;
-        }
+.subtitle {
+    text-align: center;
+    color: #94a3b8;
+    margin-bottom: 30px;
+}
 
-        button {
-            padding: 0 18px;
-            border: none;
-            border-radius: 10px;
-            background: #3b82f6;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-        }
+.password-row {
+    display: flex;
+    gap: 10px;
+}
 
-        button:hover {
-            background: #2563eb;
-        }
+input {
+    flex: 1;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #475569;
+    background: #0f172a;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
 
-        .strength-container {
-            margin-top: 25px;
-        }
+input:focus {
+    border-color: #60a5fa;
+}
 
-        .strength-bar {
-            width: 100%;
-            height: 12px;
-            background: #334155;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+button {
+    border: none;
+    border-radius: 10px;
+    padding: 0 18px;
+    background: #3b82f6;
+    color: white;
+    cursor: pointer;
+}
 
-        #strength-fill {
-            height: 100%;
-            width: 0%;
-            transition: 0.3s;
-        }
+button:hover {
+    background: #2563eb;
+}
 
-        #strength-text {
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 12px;
-        }
+.strength {
+    margin-top: 25px;
+}
 
-        .requirements {
-            margin-top: 25px;
-        }
+.bar {
+    width: 100%;
+    height: 14px;
+    background: #334155;
+    border-radius: 20px;
+    overflow: hidden;
+}
 
-        .requirement {
-            padding: 9px 0;
-            color: #94a3b8;
-        }
+#barFill {
+    height: 100%;
+    width: 0%;
+    transition: width .3s;
+}
 
-        .requirement.valid {
-            color: #4ade80;
-        }
+#strengthText {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 12px;
+}
 
-        .requirement.invalid {
-            color: #f87171;
-        }
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 25px;
+}
 
-        .score {
-            text-align: center;
-            margin-top: 20px;
-            color: #94a3b8;
-        }
+.stat {
+    background: #0f172a;
+    padding: 18px;
+    border-radius: 12px;
+}
 
-        .warning {
-            margin-top: 20px;
-            padding: 12px;
-            background: #422006;
-            color: #fdba74;
-            border-radius: 8px;
-            display: none;
-        }
-    </style>
+.stat-title {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.stat-value {
+    margin-top: 6px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.section {
+    margin-top: 28px;
+}
+
+.section h2 {
+    font-size: 18px;
+}
+
+.issue {
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 8px;
+    background: #3f1d1d;
+    color: #fca5a5;
+}
+
+.good {
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 8px;
+    background: #143522;
+    color: #86efac;
+}
+
+.privacy {
+    margin-top: 25px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #172554;
+    color: #bfdbfe;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .password-row {
+        flex-direction: column;
+    }
+
+    button {
+        padding: 13px;
+    }
+
+}
+
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>🔐 Password Strength Checker</h1>
+<div class="card">
 
-    <p class="description">
-        Test how strong your password is.
-    </p>
+<h1>🔐 Password Strength Analyzer</h1>
 
-    <div class="password-box">
-        <input
-            type="password"
-            id="password"
-            placeholder="Enter a password..."
-            autocomplete="off"
-        >
+<p class="subtitle">
+Analyze password guessability entirely in your browser.
+</p>
 
-        <button onclick="togglePassword()">Show</button>
-    </div>
+<div class="password-row">
 
-    <div class="strength-container">
+<input
+    id="password"
+    type="password"
+    placeholder="Enter a password..."
+    autocomplete="off"
+>
 
-        <div class="strength-bar">
-            <div id="strength-fill"></div>
-        </div>
-
-        <div id="strength-text">
-            Enter a password
-        </div>
-
-    </div>
-
-    <div class="requirements">
-
-        <div class="requirement" id="length">
-            ○ At least 12 characters
-        </div>
-
-        <div class="requirement" id="lowercase">
-            ○ Contains lowercase letters
-        </div>
-
-        <div class="requirement" id="uppercase">
-            ○ Contains uppercase letters
-        </div>
-
-        <div class="requirement" id="number">
-            ○ Contains numbers
-        </div>
-
-        <div class="requirement" id="special">
-            ○ Contains special characters
-        </div>
-
-        <div class="requirement" id="long">
-            ○ At least 16 characters for extra strength
-        </div>
-
-    </div>
-
-    <div class="score">
-        Score: <span id="score">0</span>/6
-    </div>
-
-    <div class="warning" id="warning">
-        ⚠️ Avoid using passwords that contain common words or obvious patterns.
-    </div>
+<button id="toggle">
+    Show
+</button>
 
 </div>
 
+
+<div class="strength">
+
+<div class="bar">
+<div id="barFill"></div>
+</div>
+
+<div id="strengthText">
+Enter a password
+</div>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="stat-title">
+Entropy
+</div>
+
+<div class="stat-value" id="entropy">
+-
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-title">
+Estimated guesses
+</div>
+
+<div class="stat-value" id="guesses">
+-
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-title">
+Estimated crack time
+</div>
+
+<div class="stat-value" id="crackTime">
+-
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-title">
+Length
+</div>
+
+<div class="stat-value" id="length">
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2>Security Analysis</h2>
+
+<div id="analysis">
+    Enter a password to begin the analysis.
+</div>
+
+</div>
+
+
+<div class="privacy">
+
+🔒 <strong>Privacy:</strong>
+
+Your password is analyzed entirely inside your browser.
+Nothing is sent to a server, API, database, or third-party service.
+
+</div>
+
+</div>
+
+</div>
+
+
 <script>
 
-const passwordInput = document.getElementById("password");
+/*
+    Common password dictionary.
 
-passwordInput.addEventListener("input", checkPassword);
+    This intentionally stays small so the website
+    remains lightweight and works completely offline.
+*/
 
-function checkPassword() {
+const commonPasswords = new Set([
 
-    const password = passwordInput.value;
+"password",
+"password1",
+"password123",
+"123456",
+"1234567",
+"12345678",
+"123456789",
+"1234567890",
+"qwerty",
+"qwerty123",
+"abc123",
+"111111",
+"000000",
+"letmein",
+"welcome",
+"admin",
+"admin123",
+"login",
+"monkey",
+"dragon",
+"football",
+"baseball",
+"master",
+"shadow",
+"superman",
+"princess",
+"iloveyou",
+"sunshine",
+"whatever",
+"trustno1",
+"starwars",
+"pokemon",
+"computer",
+"freedom",
+"hello",
+"secret",
+"passw0rd"
 
-    let score = 0;
+]);
 
-    const length = password.length >= 12;
-    const lowercase = /[a-z]/.test(password);
-    const uppercase = /[A-Z]/.test(password);
-    const number = /[0-9]/.test(password);
-    const special = /[^A-Za-z0-9]/.test(password);
-    const long = password.length >= 16;
 
-    updateRequirement("length", length);
-    updateRequirement("lowercase", lowercase);
-    updateRequirement("uppercase", uppercase);
-    updateRequirement("number", number);
-    updateRequirement("special", special);
-    updateRequirement("long", long);
+const passwordInput =
+    document.getElementById("password");
 
-    if (length) score++;
-    if (lowercase) score++;
-    if (uppercase) score++;
-    if (number) score++;
-    if (special) score++;
-    if (long) score++;
+const toggleButton =
+    document.getElementById("toggle");
 
-    const commonPasswords = [
-        "password",
-        "password123",
-        "123456",
-        "12345678",
+
+passwordInput.addEventListener(
+    "input",
+    analyzePassword
+);
+
+
+toggleButton.addEventListener(
+    "click",
+    () => {
+
+        if (passwordInput.type === "password") {
+
+            passwordInput.type = "text";
+            toggleButton.textContent = "Hide";
+
+        } else {
+
+            passwordInput.type = "password";
+            toggleButton.textContent = "Show";
+
+        }
+
+    }
+);
+
+
+/*
+    Detect character types.
+*/
+
+function getCharacterPool(password) {
+
+    let pool = 0;
+
+    if (/[a-z]/.test(password))
+        pool += 26;
+
+    if (/[A-Z]/.test(password))
+        pool += 26;
+
+    if (/[0-9]/.test(password))
+        pool += 10;
+
+    if (/[^A-Za-z0-9]/.test(password))
+        pool += 33;
+
+    return pool;
+}
+
+
+/*
+    Shannon-style character entropy estimate.
+
+    This is NOT a perfect password-strength model.
+
+    Real attackers use dictionaries, rules,
+    leaked passwords and specialized cracking models.
+*/
+
+function calculateEntropy(password) {
+
+    const pool = getCharacterPool(password);
+
+    if (pool === 0)
+        return 0;
+
+    return password.length * Math.log2(pool);
+}
+
+
+/*
+    Detect repeated characters.
+
+    Examples:
+
+    aaaaaaaa
+    111111
+    !!!!!!
+*/
+
+function hasRepeatedCharacters(password) {
+
+    return /(.)\1{2,}/.test(password);
+
+}
+
+
+/*
+    Detect simple sequences.
+
+    Examples:
+
+    123456
+    abcdef
+    654321
+    fedcba
+*/
+
+function hasSequence(password) {
+
+    const lower = password.toLowerCase();
+
+    for (let i = 0; i < lower.length - 2; i++) {
+
+        const a = lower.charCodeAt(i);
+        const b = lower.charCodeAt(i + 1);
+        const c = lower.charCodeAt(i + 2);
+
+        if (
+            b === a + 1 &&
+            c === b + 1
+        ) {
+            return true;
+        }
+
+        if (
+            b === a - 1 &&
+            c === b - 1
+        ) {
+            return true;
+        }
+
+    }
+
+    return false;
+}
+
+
+/*
+    Detect common keyboard patterns.
+*/
+
+function hasKeyboardPattern(password) {
+
+    const patterns = [
+
         "qwerty",
-        "admin",
-        "letmein",
-        "welcome"
+        "asdfgh",
+        "zxcvbn",
+        "qwertyuiop",
+        "asdfghjkl",
+        "123456",
+        "654321"
+
     ];
 
-    const isCommon = commonPasswords.includes(password.toLowerCase());
+    const lower = password.toLowerCase();
 
-    if (isCommon) {
-        score = Math.max(0, score - 3);
-        document.getElementById("warning").style.display = "block";
-    } else {
-        document.getElementById("warning").style.display = "none";
-    }
-
-    document.getElementById("score").textContent = score;
-
-    updateStrength(score, password);
+    return patterns.some(
+        pattern => lower.includes(pattern)
+    );
 
 }
 
-function updateRequirement(id, valid) {
 
-    const element = document.getElementById(id);
+/*
+    Detect years such as:
 
-    if (valid) {
+    1999
+    2005
+    2024
+    2026
+*/
 
-        element.classList.add("valid");
-        element.classList.remove("invalid");
-        element.textContent = "✓ " + element.textContent.substring(2);
+function containsYear(password) {
 
-    } else {
-
-        element.classList.add("invalid");
-        element.classList.remove("valid");
-        element.textContent = "✗ " + element.textContent.substring(2);
-
-    }
+    return /(19|20)\d{2}/.test(password);
 
 }
 
-function updateStrength(score, password) {
 
-    const fill = document.getElementById("strength-fill");
-    const text = document.getElementById("strength-text");
+/*
+    Detect common words inside a password.
+*/
+
+function containsCommonPassword(password) {
+
+    const lower = password.toLowerCase();
+
+    if (commonPasswords.has(lower))
+        return true;
+
+    for (const word of commonPasswords) {
+
+        if (
+            word.length >= 5 &&
+            lower.includes(word)
+        ) {
+            return true;
+        }
+
+    }
+
+    return false;
+
+}
+
+
+/*
+    Detect passwords that are basically
+    a common word with a number appended.
+
+    Example:
+
+    password123
+    hello123
+    admin2026
+*/
+
+function commonWordPlusNumbers(password) {
+
+    const lower = password.toLowerCase();
+
+    return commonPasswords.has(
+        lower.replace(/[0-9]+$/, "")
+    );
+
+}
+
+
+/*
+    Format large numbers.
+*/
+
+function formatNumber(number) {
+
+    if (number < 1000)
+        return Math.round(number).toString();
+
+    if (number < 1000000)
+        return Math.round(number / 1000) + "K";
+
+    if (number < 1000000000)
+        return Math.round(number / 1000000) + "M";
+
+    if (number < 1e12)
+        return Math.round(number / 1e9) + "B";
+
+    return number.toExponential(2);
+
+}
+
+
+/*
+    Estimate cracking time.
+
+    This uses a hypothetical offline attacker
+    making 10 billion guesses per second.
+
+    It is only an approximation.
+
+    Real-world cracking speed depends heavily
+    on the hashing algorithm and hardware.
+*/
+
+function calculateCrackTime(guesses) {
+
+    const guessesPerSecond = 1e10;
+
+    const seconds =
+        guesses / guessesPerSecond;
+
+    if (seconds < 1)
+        return "Less than a second";
+
+    if (seconds < 60)
+        return Math.round(seconds) + " seconds";
+
+    if (seconds < 3600)
+        return Math.round(seconds / 60) + " minutes";
+
+    if (seconds < 86400)
+        return Math.round(seconds / 3600) + " hours";
+
+    if (seconds < 31557600)
+        return Math.round(seconds / 86400) + " days";
+
+    const years =
+        seconds / 31557600;
+
+    if (years < 1000)
+        return Math.round(years) + " years";
+
+    if (years < 1e6)
+        return Math.round(years / 1000) + " thousand years";
+
+    if (years < 1e9)
+        return Math.round(years / 1e6) + " million years";
+
+    return "Extremely long";
+
+}
+
+
+/*
+    Main password analysis.
+*/
+
+function analyzePassword() {
+
+    const password =
+        passwordInput.value;
+
+    const analysis =
+        document.getElementById("analysis");
 
     if (password.length === 0) {
 
-        fill.style.width = "0%";
-        text.textContent = "Enter a password";
+        document.getElementById("entropy").textContent = "-";
+        document.getElementById("guesses").textContent = "-";
+        document.getElementById("crackTime").textContent = "-";
+        document.getElementById("length").textContent = "0";
+
+        document.getElementById("strengthText").textContent =
+            "Enter a password";
+
+        document.getElementById("barFill").style.width =
+            "0%";
+
+        analysis.innerHTML =
+            "Enter a password to begin the analysis.";
+
         return;
 
     }
 
-    const percentage = (score / 6) * 100;
 
-    fill.style.width = percentage + "%";
+    const entropy =
+        calculateEntropy(password);
 
-    if (score <= 2) {
 
-        text.textContent = "Very Weak";
+    /*
+        Start with entropy-based guesses.
 
-    } else if (score <= 3) {
+        Then apply penalties for patterns
+        that attackers can exploit.
+    */
 
-        text.textContent = "Weak";
+    let effectiveEntropy = entropy;
 
-    } else if (score <= 4) {
+    const issues = [];
 
-        text.textContent = "Moderate";
 
-    } else if (score <= 5) {
+    if (containsCommonPassword(password)) {
 
-        text.textContent = "Strong";
+        effectiveEntropy -= 25;
 
-    } else {
-
-        text.textContent = "Very Strong";
+        issues.push(
+            "This password contains a commonly used password or word."
+        );
 
     }
 
-}
 
-function togglePassword() {
+    if (commonWordPlusNumbers(password)) {
 
-    const input = document.getElementById("password");
-    const button = document.querySelector("button");
+        effectiveEntropy -= 10;
 
-    if (input.type === "password") {
+        issues.push(
+            "Adding numbers to a common word is a common cracking pattern."
+        );
 
-        input.type = "text";
-        button.textContent = "Hide";
+    }
+
+
+    if (hasRepeatedCharacters(password)) {
+
+        effectiveEntropy -= 8;
+
+        issues.push(
+            "Repeated characters make the password easier to predict."
+        );
+
+    }
+
+
+    if (hasSequence(password)) {
+
+        effectiveEntropy -= 8;
+
+        issues.push(
+            "The password contains an obvious sequence."
+        );
+
+    }
+
+
+    if (hasKeyboardPattern(password)) {
+
+        effectiveEntropy -= 12;
+
+        issues.push(
+            "The password contains a predictable keyboard pattern."
+        );
+
+    }
+
+
+    if (containsYear(password)) {
+
+        effectiveEntropy -= 5;
+
+        issues.push(
+            "Years are commonly included in passwords and are easy to test."
+        );
+
+    }
+
+
+    /*
+        Minimum effective entropy.
+    */
+
+    effectiveEntropy =
+        Math.max(0, effectiveEntropy);
+
+
+    /*
+        Convert entropy into an estimated
+        number of guesses.
+
+        This is a simplified mathematical model.
+    */
+
+    const guesses =
+        Math.pow(2, effectiveEntropy);
+
+
+    /*
+        Display statistics.
+    */
+
+    document.getElementById("entropy").textContent =
+        Math.round(effectiveEntropy) + " bits";
+
+    document.getElementById("guesses").textContent =
+        formatNumber(guesses);
+
+    document.getElementById("crackTime").textContent =
+        calculateCrackTime(guesses);
+
+    document.getElementById("length").textContent =
+        password.length;
+
+
+    /*
+        Convert entropy into a strength score.
+
+        These thresholds are only for displaying
+        an understandable rating.
+    */
+
+    let strength;
+    let percentage;
+
+
+    if (effectiveEntropy < 25) {
+
+        strength = "Very Weak";
+        percentage = 15;
+
+    } else if (effectiveEntropy < 40) {
+
+        strength = "Weak";
+        percentage = 30;
+
+    } else if (effectiveEntropy < 60) {
+
+        strength = "Moderate";
+        percentage = 50;
+
+    } else if (effectiveEntropy < 80) {
+
+        strength = "Strong";
+        percentage = 75;
 
     } else {
 
-        input.type = "password";
-        button.textContent = "Show";
+        strength = "Very Strong";
+        percentage = 100;
+
+    }
+
+
+    document.getElementById("strengthText").textContent =
+        strength;
+
+
+    document.getElementById("barFill").style.width =
+        percentage + "%";
+
+
+    /*
+        Generate analysis.
+    */
+
+    if (issues.length === 0) {
+
+        analysis.innerHTML =
+            '<div class="good">✓ No obvious password patterns detected.</div>';
+
+    } else {
+
+        analysis.innerHTML =
+            issues
+                .map(issue =>
+                    `<div class="issue">⚠ ${issue}</div>`
+                )
+                .join("");
 
     }
 
