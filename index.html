@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Advanced Password Strength Checker</title>
+<title>Password Strength Analyzer</title>
 
 <style>
 
@@ -15,18 +15,95 @@
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     background: #0f172a;
     color: #f8fafc;
     min-height: 100vh;
+}
+
+/* =========================
+   LOADING SCREEN
+========================= */
+
+#loadingScreen {
+    position: fixed;
+    inset: 0;
+    background: #020617;
+    z-index: 9999;
     display: flex;
+    align-items: center;
     justify-content: center;
+    overflow: hidden;
+}
+
+.matrix {
+    position: absolute;
+    inset: 0;
+    opacity: .18;
+    color: #22c55e;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 20px;
+    word-break: break-all;
+    overflow: hidden;
+}
+
+.loadingContent {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+}
+
+.lock {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.loadingTitle {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.loadingText {
+    color: #94a3b8;
+    font-family: monospace;
+    min-height: 20px;
+}
+
+.loadingBar {
+    margin: 25px auto 0;
+    width: 100%;
+    max-width: 400px;
+    height: 5px;
+    background: #1e293b;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.loadingProgress {
+    height: 100%;
+    width: 0%;
+    background: #22c55e;
+    transition: width .15s linear;
+}
+
+
+/* =========================
+   MAIN PAGE
+========================= */
+
+#app {
+    display: none;
     padding: 40px 15px;
 }
 
 .container {
     width: 100%;
     max-width: 750px;
+    margin: auto;
 }
 
 .card {
@@ -47,7 +124,12 @@ h1 {
     margin-bottom: 30px;
 }
 
-.password-row {
+
+/* =========================
+   PASSWORD INPUT
+========================= */
+
+.passwordRow {
     display: flex;
     gap: 10px;
 }
@@ -80,6 +162,11 @@ button:hover {
     background: #2563eb;
 }
 
+
+/* =========================
+   STRENGTH BAR
+========================= */
+
 .strength {
     margin-top: 25px;
 }
@@ -96,6 +183,7 @@ button:hover {
     height: 100%;
     width: 0%;
     transition: width .3s;
+    background: #ef4444;
 }
 
 #strengthText {
@@ -104,6 +192,11 @@ button:hover {
     font-weight: bold;
     margin-top: 12px;
 }
+
+
+/* =========================
+   STATS
+========================= */
 
 .stats {
     display: grid;
@@ -118,16 +211,67 @@ button:hover {
     border-radius: 12px;
 }
 
-.stat-title {
+.statTitle {
     color: #94a3b8;
     font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
 }
 
-.stat-value {
+.statValue {
     margin-top: 6px;
     font-size: 20px;
     font-weight: bold;
 }
+
+
+/* =========================
+   QUESTION MARK
+========================= */
+
+.infoButton {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border-radius: 50%;
+    background: #475569;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.infoButton:hover {
+    background: #64748b;
+}
+
+.tooltip {
+    position: absolute;
+    width: 230px;
+    background: #020617;
+    border: 1px solid #475569;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.4;
+    box-shadow: 0 10px 25px rgba(0,0,0,.4);
+    z-index: 10;
+    display: none;
+}
+
+.infoContainer {
+    position: relative;
+}
+
+
+/* =========================
+   ANALYSIS
+========================= */
 
 .section {
     margin-top: 28px;
@@ -153,6 +297,11 @@ button:hover {
     color: #86efac;
 }
 
+
+/* =========================
+   PRIVACY
+========================= */
+
 .privacy {
     margin-top: 25px;
     padding: 15px;
@@ -162,13 +311,18 @@ button:hover {
     font-size: 14px;
 }
 
+
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 600px) {
 
     .stats {
         grid-template-columns: 1fr;
     }
 
-    .password-row {
+    .passwordRow {
         flex-direction: column;
     }
 
@@ -183,6 +337,47 @@ button:hover {
 
 <body>
 
+
+<!-- =========================
+     LOADING SCREEN
+========================= -->
+
+<div id="loadingScreen">
+
+    <div class="matrix" id="matrix"></div>
+
+    <div class="loadingContent">
+
+        <div class="lock">🔐</div>
+
+        <div class="loadingTitle">
+            PASSWORD SECURITY
+        </div>
+
+        <div class="loadingText" id="loadingText">
+            Initializing security analyzer...
+        </div>
+
+        <div class="loadingBar">
+
+            <div
+                class="loadingProgress"
+                id="loadingProgress">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     APPLICATION
+========================= -->
+
+<div id="app">
+
 <div class="container">
 
 <div class="card">
@@ -193,7 +388,8 @@ button:hover {
 Analyze password guessability entirely in your browser.
 </p>
 
-<div class="password-row">
+
+<div class="passwordRow">
 
 <input
     id="password"
@@ -212,11 +408,11 @@ Analyze password guessability entirely in your browser.
 <div class="strength">
 
 <div class="bar">
-<div id="barFill"></div>
+    <div id="barFill"></div>
 </div>
 
 <div id="strengthText">
-Enter a password
+    Enter a password
 </div>
 
 </div>
@@ -224,56 +420,118 @@ Enter a password
 
 <div class="stats">
 
+
+<!-- ENTROPY -->
+
 <div class="stat">
 
-<div class="stat-title">
+<div class="statTitle">
+
 Entropy
+
+<div class="infoContainer">
+
+<button
+    class="infoButton"
+    data-info="Entropy measures how unpredictable a password is. Higher entropy generally means more possible combinations and therefore more resistance to guessing."
+>
+?
+</button>
+
 </div>
 
-<div class="stat-value" id="entropy">
+</div>
+
+<div class="statValue" id="entropy">
 -
 </div>
 
 </div>
 
 
+<!-- GUESSES -->
+
 <div class="stat">
 
-<div class="stat-title">
+<div class="statTitle">
+
 Estimated guesses
+
+<div class="infoContainer">
+
+<button
+    class="infoButton"
+    data-info="This estimates how many guesses an attacker might need in a simplified brute-force model. Real attackers use dictionaries, leaked passwords and other techniques, so this is only an estimate."
+>
+?
+</button>
+
 </div>
 
-<div class="stat-value" id="guesses">
+</div>
+
+<div class="statValue" id="guesses">
 -
 </div>
 
 </div>
 
 
+<!-- CRACK TIME -->
+
 <div class="stat">
 
-<div class="stat-title">
+<div class="statTitle">
+
 Estimated crack time
+
+<div class="infoContainer">
+
+<button
+    class="infoButton"
+    data-info="This is an approximate time based on the estimated number of guesses and a hypothetical offline attacker making 10 billion guesses per second. Actual times vary greatly depending on the password hashing system and hardware."
+>
+?
+</button>
+
 </div>
 
-<div class="stat-value" id="crackTime">
+</div>
+
+<div class="statValue" id="crackTime">
 -
 </div>
 
 </div>
 
 
+<!-- LENGTH -->
+
 <div class="stat">
 
-<div class="stat-title">
+<div class="statTitle">
+
 Length
+
+<div class="infoContainer">
+
+<button
+    class="infoButton"
+    data-info="The total number of characters in the password. Longer passwords are generally harder to brute-force, especially when they are not predictable."
+>
+?
+</button>
+
 </div>
 
-<div class="stat-value" id="length">
+</div>
+
+<div class="statValue" id="length">
 0
 </div>
 
 </div>
+
 
 </div>
 
@@ -283,7 +541,7 @@ Length
 <h2>Security Analysis</h2>
 
 <div id="analysis">
-    Enter a password to begin the analysis.
+Enter a password to begin the analysis.
 </div>
 
 </div>
@@ -298,6 +556,9 @@ Nothing is sent to a server, API, database, or third-party service.
 
 </div>
 
+
+</div>
+
 </div>
 
 </div>
@@ -305,12 +566,124 @@ Nothing is sent to a server, API, database, or third-party service.
 
 <script>
 
-/*
-    Common password dictionary.
 
-    This intentionally stays small so the website
-    remains lightweight and works completely offline.
-*/
+/* =========================
+   LOADING ANIMATION
+========================= */
+
+const matrix =
+    document.getElementById("matrix");
+
+const loadingProgress =
+    document.getElementById("loadingProgress");
+
+const loadingText =
+    document.getElementById("loadingText");
+
+
+const characters =
+    "0123456789ABCDEF";
+
+
+function generateRandomText() {
+
+    let text = "";
+
+    for (let i = 0; i < 3000; i++) {
+
+        text +=
+            characters[
+                Math.floor(
+                    Math.random() *
+                    characters.length
+                )
+            ];
+
+    }
+
+    return text;
+
+}
+
+
+matrix.textContent =
+    generateRandomText();
+
+
+let progress = 0;
+
+
+const loadingMessages = [
+
+    "Initializing security analyzer...",
+    "Loading password intelligence...",
+    "Checking pattern detection...",
+    "Preparing entropy calculator...",
+    "Initializing local analysis...",
+    "Securing client-side processing...",
+    "Analyzer ready."
+
+];
+
+
+const loadingInterval =
+    setInterval(() => {
+
+        progress += Math.random() * 8 + 3;
+
+        if (progress >= 100) {
+
+            progress = 100;
+
+            clearInterval(loadingInterval);
+
+            loadingText.textContent =
+                "Analyzer ready.";
+
+            setTimeout(() => {
+
+                document.getElementById(
+                    "loadingScreen"
+                ).style.opacity = "0";
+
+                document.getElementById(
+                    "loadingScreen"
+                ).style.transition = "opacity .4s";
+
+                setTimeout(() => {
+
+                    document.getElementById(
+                        "loadingScreen"
+                    ).style.display = "none";
+
+                    document.getElementById(
+                        "app"
+                    ).style.display = "block";
+
+                }, 400);
+
+            }, 250);
+
+        }
+
+        loadingProgress.style.width =
+            progress + "%";
+
+        const messageIndex =
+            Math.min(
+                Math.floor(progress / 15),
+                loadingMessages.length - 1
+            );
+
+        loadingText.textContent =
+            loadingMessages[messageIndex];
+
+    }, 120);
+
+
+/* =========================
+   PASSWORD CHECKER
+========================= */
 
 const commonPasswords = new Set([
 
@@ -358,9 +731,6 @@ const commonPasswords = new Set([
 const passwordInput =
     document.getElementById("password");
 
-const toggleButton =
-    document.getElementById("toggle");
-
 
 passwordInput.addEventListener(
     "input",
@@ -368,29 +738,82 @@ passwordInput.addEventListener(
 );
 
 
-toggleButton.addEventListener(
-    "click",
-    () => {
+document.getElementById("toggle")
+.addEventListener("click", () => {
 
-        if (passwordInput.type === "password") {
+    if (passwordInput.type === "password") {
 
-            passwordInput.type = "text";
-            toggleButton.textContent = "Hide";
+        passwordInput.type = "text";
 
-        } else {
+        document.getElementById("toggle")
+            .textContent = "Hide";
 
-            passwordInput.type = "password";
-            toggleButton.textContent = "Show";
+    } else {
 
-        }
+        passwordInput.type = "password";
+
+        document.getElementById("toggle")
+            .textContent = "Show";
 
     }
-);
+
+});
 
 
-/*
-    Detect character types.
-*/
+/* =========================
+   INFO BUTTONS
+========================= */
+
+document.querySelectorAll(".infoButton")
+.forEach(button => {
+
+    button.addEventListener("click", event => {
+
+        event.stopPropagation();
+
+        const existing =
+            button.parentElement.querySelector(
+                ".tooltip"
+            );
+
+        document.querySelectorAll(".tooltip")
+        .forEach(t => t.remove());
+
+        if (existing) {
+            existing.remove();
+            return;
+        }
+
+        const tooltip =
+            document.createElement("div");
+
+        tooltip.className = "tooltip";
+
+        tooltip.textContent =
+            button.dataset.info;
+
+        button.parentElement.appendChild(
+            tooltip
+        );
+
+        tooltip.style.display = "block";
+
+    });
+
+});
+
+
+document.addEventListener("click", () => {
+
+    document.querySelectorAll(".tooltip")
+    .forEach(t => t.remove());
+
+});
+
+
+/* =========================
+   CHARACTER POOL
+========================= */
 
 function getCharacterPool(password) {
 
@@ -409,38 +832,31 @@ function getCharacterPool(password) {
         pool += 33;
 
     return pool;
+
 }
 
 
-/*
-    Shannon-style character entropy estimate.
-
-    This is NOT a perfect password-strength model.
-
-    Real attackers use dictionaries, rules,
-    leaked passwords and specialized cracking models.
-*/
+/* =========================
+   ENTROPY
+========================= */
 
 function calculateEntropy(password) {
 
-    const pool = getCharacterPool(password);
+    const pool =
+        getCharacterPool(password);
 
     if (pool === 0)
         return 0;
 
-    return password.length * Math.log2(pool);
+    return password.length *
+        Math.log2(pool);
+
 }
 
 
-/*
-    Detect repeated characters.
-
-    Examples:
-
-    aaaaaaaa
-    111111
-    !!!!!!
-*/
+/* =========================
+   PATTERN DETECTION
+========================= */
 
 function hasRepeatedCharacters(password) {
 
@@ -449,26 +865,26 @@ function hasRepeatedCharacters(password) {
 }
 
 
-/*
-    Detect simple sequences.
-
-    Examples:
-
-    123456
-    abcdef
-    654321
-    fedcba
-*/
-
 function hasSequence(password) {
 
-    const lower = password.toLowerCase();
+    const lower =
+        password.toLowerCase();
 
-    for (let i = 0; i < lower.length - 2; i++) {
+    for (
+        let i = 0;
+        i < lower.length - 2;
+        i++
+    ) {
 
-        const a = lower.charCodeAt(i);
-        const b = lower.charCodeAt(i + 1);
-        const c = lower.charCodeAt(i + 2);
+        const a =
+            lower.charCodeAt(i);
+
+        const b =
+            lower.charCodeAt(i + 1);
+
+        const c =
+            lower.charCodeAt(i + 2);
+
 
         if (
             b === a + 1 &&
@@ -476,6 +892,7 @@ function hasSequence(password) {
         ) {
             return true;
         }
+
 
         if (
             b === a - 1 &&
@@ -487,12 +904,9 @@ function hasSequence(password) {
     }
 
     return false;
+
 }
 
-
-/*
-    Detect common keyboard patterns.
-*/
 
 function hasKeyboardPattern(password) {
 
@@ -508,23 +922,16 @@ function hasKeyboardPattern(password) {
 
     ];
 
-    const lower = password.toLowerCase();
+    const lower =
+        password.toLowerCase();
 
     return patterns.some(
-        pattern => lower.includes(pattern)
+        pattern =>
+            lower.includes(pattern)
     );
 
 }
 
-
-/*
-    Detect years such as:
-
-    1999
-    2005
-    2024
-    2026
-*/
 
 function containsYear(password) {
 
@@ -533,18 +940,21 @@ function containsYear(password) {
 }
 
 
-/*
-    Detect common words inside a password.
-*/
-
 function containsCommonPassword(password) {
 
-    const lower = password.toLowerCase();
+    const lower =
+        password.toLowerCase();
 
-    if (commonPasswords.has(lower))
+    if (
+        commonPasswords.has(lower)
+    ) {
         return true;
+    }
 
-    for (const word of commonPasswords) {
+
+    for (
+        const word of commonPasswords
+    ) {
 
         if (
             word.length >= 5 &&
@@ -560,20 +970,10 @@ function containsCommonPassword(password) {
 }
 
 
-/*
-    Detect passwords that are basically
-    a common word with a number appended.
-
-    Example:
-
-    password123
-    hello123
-    admin2026
-*/
-
 function commonWordPlusNumbers(password) {
 
-    const lower = password.toLowerCase();
+    const lower =
+        password.toLowerCase();
 
     return commonPasswords.has(
         lower.replace(/[0-9]+$/, "")
@@ -582,104 +982,142 @@ function commonWordPlusNumbers(password) {
 }
 
 
-/*
-    Format large numbers.
-*/
+/* =========================
+   NUMBER FORMATTING
+========================= */
 
 function formatNumber(number) {
 
     if (number < 1000)
-        return Math.round(number).toString();
+        return Math.round(number)
+            .toString();
 
     if (number < 1000000)
-        return Math.round(number / 1000) + "K";
+        return Math.round(
+            number / 1000
+        ) + "K";
 
     if (number < 1000000000)
-        return Math.round(number / 1000000) + "M";
+        return Math.round(
+            number / 1000000
+        ) + "M";
 
     if (number < 1e12)
-        return Math.round(number / 1e9) + "B";
+        return Math.round(
+            number / 1e9
+        ) + "B";
 
     return number.toExponential(2);
 
 }
 
 
-/*
-    Estimate cracking time.
-
-    This uses a hypothetical offline attacker
-    making 10 billion guesses per second.
-
-    It is only an approximation.
-
-    Real-world cracking speed depends heavily
-    on the hashing algorithm and hardware.
-*/
+/* =========================
+   CRACK TIME
+========================= */
 
 function calculateCrackTime(guesses) {
 
-    const guessesPerSecond = 1e10;
+    const guessesPerSecond =
+        1e10;
 
     const seconds =
         guesses / guessesPerSecond;
 
+
     if (seconds < 1)
         return "Less than a second";
 
+
     if (seconds < 60)
-        return Math.round(seconds) + " seconds";
+        return Math.round(seconds)
+            + " seconds";
+
 
     if (seconds < 3600)
-        return Math.round(seconds / 60) + " minutes";
+        return Math.round(
+            seconds / 60
+        ) + " minutes";
+
 
     if (seconds < 86400)
-        return Math.round(seconds / 3600) + " hours";
+        return Math.round(
+            seconds / 3600
+        ) + " hours";
+
 
     if (seconds < 31557600)
-        return Math.round(seconds / 86400) + " days";
+        return Math.round(
+            seconds / 86400
+        ) + " days";
+
 
     const years =
         seconds / 31557600;
 
+
     if (years < 1000)
-        return Math.round(years) + " years";
+        return Math.round(years)
+            + " years";
+
 
     if (years < 1e6)
-        return Math.round(years / 1000) + " thousand years";
+        return Math.round(
+            years / 1000
+        ) + " thousand years";
+
 
     if (years < 1e9)
-        return Math.round(years / 1e6) + " million years";
+        return Math.round(
+            years / 1e6
+        ) + " million years";
+
 
     return "Extremely long";
 
 }
 
 
-/*
-    Main password analysis.
-*/
+/* =========================
+   MAIN ANALYSIS
+========================= */
 
 function analyzePassword() {
 
     const password =
         passwordInput.value;
 
+
     const analysis =
         document.getElementById("analysis");
 
+
     if (password.length === 0) {
 
-        document.getElementById("entropy").textContent = "-";
-        document.getElementById("guesses").textContent = "-";
-        document.getElementById("crackTime").textContent = "-";
-        document.getElementById("length").textContent = "0";
+        document.getElementById(
+            "entropy"
+        ).textContent = "-";
 
-        document.getElementById("strengthText").textContent =
+        document.getElementById(
+            "guesses"
+        ).textContent = "-";
+
+        document.getElementById(
+            "crackTime"
+        ).textContent = "-";
+
+        document.getElementById(
+            "length"
+        ).textContent = "0";
+
+        document.getElementById(
+            "strengthText"
+        ).textContent =
             "Enter a password";
 
-        document.getElementById("barFill").style.width =
-            "0%";
+        document.getElementById(
+            "barFill"
+        ).style.width = "0%";
 
         analysis.innerHTML =
             "Enter a password to begin the analysis.";
@@ -693,19 +1131,16 @@ function analyzePassword() {
         calculateEntropy(password);
 
 
-    /*
-        Start with entropy-based guesses.
+    let effectiveEntropy =
+        entropy;
 
-        Then apply penalties for patterns
-        that attackers can exploit.
-    */
-
-    let effectiveEntropy = entropy;
 
     const issues = [];
 
 
-    if (containsCommonPassword(password)) {
+    if (
+        containsCommonPassword(password)
+    ) {
 
         effectiveEntropy -= 25;
 
@@ -716,7 +1151,9 @@ function analyzePassword() {
     }
 
 
-    if (commonWordPlusNumbers(password)) {
+    if (
+        commonWordPlusNumbers(password)
+    ) {
 
         effectiveEntropy -= 10;
 
@@ -727,7 +1164,9 @@ function analyzePassword() {
     }
 
 
-    if (hasRepeatedCharacters(password)) {
+    if (
+        hasRepeatedCharacters(password)
+    ) {
 
         effectiveEntropy -= 8;
 
@@ -738,7 +1177,9 @@ function analyzePassword() {
     }
 
 
-    if (hasSequence(password)) {
+    if (
+        hasSequence(password)
+    ) {
 
         effectiveEntropy -= 8;
 
@@ -749,7 +1190,9 @@ function analyzePassword() {
     }
 
 
-    if (hasKeyboardPattern(password)) {
+    if (
+        hasKeyboardPattern(password)
+    ) {
 
         effectiveEntropy -= 12;
 
@@ -760,7 +1203,9 @@ function analyzePassword() {
     }
 
 
-    if (containsYear(password)) {
+    if (
+        containsYear(password)
+    ) {
 
         effectiveEntropy -= 5;
 
@@ -771,48 +1216,45 @@ function analyzePassword() {
     }
 
 
-    /*
-        Minimum effective entropy.
-    */
-
     effectiveEntropy =
-        Math.max(0, effectiveEntropy);
+        Math.max(
+            0,
+            effectiveEntropy
+        );
 
-
-    /*
-        Convert entropy into an estimated
-        number of guesses.
-
-        This is a simplified mathematical model.
-    */
 
     const guesses =
-        Math.pow(2, effectiveEntropy);
+        Math.pow(
+            2,
+            effectiveEntropy
+        );
 
 
-    /*
-        Display statistics.
-    */
+    document.getElementById(
+        "entropy"
+    ).textContent =
+        Math.round(
+            effectiveEntropy
+        ) + " bits";
 
-    document.getElementById("entropy").textContent =
-        Math.round(effectiveEntropy) + " bits";
 
-    document.getElementById("guesses").textContent =
+    document.getElementById(
+        "guesses"
+    ).textContent =
         formatNumber(guesses);
 
-    document.getElementById("crackTime").textContent =
+
+    document.getElementById(
+        "crackTime"
+    ).textContent =
         calculateCrackTime(guesses);
 
-    document.getElementById("length").textContent =
+
+    document.getElementById(
+        "length"
+    ).textContent =
         password.length;
 
-
-    /*
-        Convert entropy into a strength score.
-
-        These thresholds are only for displaying
-        an understandable rating.
-    */
 
     let strength;
     let percentage;
@@ -846,17 +1288,17 @@ function analyzePassword() {
     }
 
 
-    document.getElementById("strengthText").textContent =
+    document.getElementById(
+        "strengthText"
+    ).textContent =
         strength;
 
 
-    document.getElementById("barFill").style.width =
+    document.getElementById(
+        "barFill"
+    ).style.width =
         percentage + "%";
 
-
-    /*
-        Generate analysis.
-    */
 
     if (issues.length === 0) {
 
