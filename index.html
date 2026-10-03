@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -676,458 +675,453 @@
   </div>
 
   <script>
-  const passwordInput = document.getElementById("password");
-  const toggle = document.getElementById("toggle");
+    /*
+      Everything below runs locally in the browser.
 
-  const orb = document.getElementById("orb");
-  const orbScore = document.getElementById("orbScore");
-  const strengthText = document.getElementById("strengthText");
-  const strengthDescription = document.getElementById("strengthDescription");
-  const progressFill = document.getElementById("progressFill");
+      There are:
+      - No fetch() requests
+      - No APIs
+      - No external libraries
+      - No analytics
+      - No password uploads
+    */
 
-  const entropyEl = document.getElementById("entropy");
-  const guessesEl = document.getElementById("guesses");
-  const crackTimeEl = document.getElementById("crackTime");
-  const lengthEl = document.getElementById("length");
-  const issuesEl = document.getElementById("issues");
+    const passwordInput = document.getElementById("password");
+    const toggle = document.getElementById("toggle");
 
-  const commonPasswords = new Set([
-    "password",
-    "password1",
-    "password123",
-    "123456",
-    "1234567",
-    "12345678",
-    "123456789",
-    "1234567890",
-    "qwerty",
-    "qwerty123",
-    "qwertyuiop",
-    "abc123",
-    "abc1234",
-    "admin",
-    "admin123",
-    "welcome",
-    "welcome1",
-    "letmein",
-    "monkey",
-    "dragon",
-    "football",
-    "baseball",
-    "iloveyou",
-    "princess",
-    "sunshine",
-    "master",
-    "login",
-    "hello",
-    "freedom",
-    "whatever",
-    "secret",
-    "shadow",
-    "superman",
-    "trustno1"
-  ]);
+    const orb = document.getElementById("orb");
+    const orbScore = document.getElementById("orbScore");
+    const strengthText = document.getElementById("strengthText");
+    const strengthDescription = document.getElementById("strengthDescription");
+    const progressFill = document.getElementById("progressFill");
 
-  toggle.addEventListener("click", () => {
-    const showing = passwordInput.type === "text";
-
-    passwordInput.type = showing ? "password" : "text";
-    toggle.textContent = showing ? "◉" : "◌";
-  });
-
-  document.querySelectorAll(".info-btn").forEach(button => {
-    button.addEventListener("click", event => {
-      event.stopPropagation();
-
-      document.querySelectorAll(".tooltip").forEach(t => t.remove());
-
-      const tooltip = document.createElement("div");
-      tooltip.className = "tooltip";
-      tooltip.textContent = button.dataset.info;
-
-      button.parentElement.parentElement.appendChild(tooltip);
-    });
-  });
-
-  document.addEventListener("click", () => {
-    document.querySelectorAll(".tooltip").forEach(t => t.remove());
-  });
-
-  function getCharacterPool(password) {
-    let pool = 0;
-
-    if (/[a-z]/.test(password)) pool += 26;
-    if (/[A-Z]/.test(password)) pool += 26;
-    if (/[0-9]/.test(password)) pool += 10;
-    if (/[^A-Za-z0-9]/.test(password)) pool += 33;
-
-    return pool;
-  }
-
-  function calculateEntropy(password) {
-    if (!password) return 0;
-
-    const pool = getCharacterPool(password);
-
-    if (!pool) return 0;
-
-    return password.length * Math.log2(pool);
-  }
-
-  function hasRepeatedCharacters(password) {
-    return /(.)\1{2,}/.test(password);
-  }
-
-  function hasSequence(password) {
-    const lower = password.toLowerCase();
-
-    for (let i = 0; i < lower.length - 2; i++) {
-      const a = lower.charCodeAt(i);
-      const b = lower.charCodeAt(i + 1);
-      const c = lower.charCodeAt(i + 2);
-
-      if (
-        (b === a + 1 && c === b + 1) ||
-        (b === a - 1 && c === b - 1)
-      ) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  function hasKeyboardPattern(password) {
-    const lower = password.toLowerCase();
-
-    const patterns = [
-      "qwerty",
-      "asdfgh",
-      "zxcvbn",
-      "qwertyuiop",
-      "asdfghjkl",
-      "zxcvbnm"
-    ];
-
-    return patterns.some(pattern => lower.includes(pattern));
-  }
-
-  function containsYear(password) {
-    return /(19|20)\d{2}/.test(password);
-  }
-
-  function containsCommonPassword(password) {
-    const lower = password.toLowerCase();
-
-    for (const word of commonPasswords) {
-      if (lower === word || lower.includes(word)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  function commonWordPlusNumbers(password) {
-    const lower = password.toLowerCase();
-    const stripped = lower.replace(/\d+$/, "");
-
-    return stripped.length >= 3 && commonPasswords.has(stripped);
-  }
-
-  function formatNumber(number) {
-    if (number < 1000) {
-      return Math.round(number).toString();
-    }
-
-    if (number < 1e6) {
-      return (number / 1e3).toFixed(1) + "K";
-    }
-
-    if (number < 1e9) {
-      return (number / 1e6).toFixed(1) + "M";
-    }
-
-    if (number < 1e12) {
-      return (number / 1e9).toFixed(1) + "B";
-    }
-
-    if (number < 1e15) {
-      return (number / 1e12).toFixed(1) + "T";
-    }
-
-    return number.toExponential(1);
-  }
-
-  function calculateCrackTime(guesses) {
-    if (!guesses) return "—";
-
-    const guessesPerSecond = 1e10;
-    const seconds = guesses / guessesPerSecond;
-
-    if (seconds < 1) return "< 1 sec";
-    if (seconds < 60) return Math.round(seconds) + " sec";
-    if (seconds < 3600) return Math.round(seconds / 60) + " min";
-    if (seconds < 86400) return Math.round(seconds / 3600) + " hrs";
-    if (seconds < 31557600) return Math.round(seconds / 86400) + " days";
-    if (seconds < 3155760000) {
-      return Math.round(seconds / 31557600) + " years";
-    }
-
-    return "Centuries";
-  }
-
-  function addIssue(text, type = "normal") {
-    const item = document.createElement("div");
-    item.className = "issue";
-
-    const dot = document.createElement("div");
-    dot.className = "issue-dot";
-
-    if (type === "warning") {
-      dot.style.background = "var(--danger)";
-    }
-
-    const message = document.createElement("div");
-    message.textContent = text;
-
-    item.appendChild(dot);
-    item.appendChild(message);
-
-    issuesEl.appendChild(item);
-  }
-
-  /*
-    NEW:
-    Scrambles the guesses number while the password is being analyzed.
-  */
-
-  let scrambleTimer = null;
-
-  function randomDigits(length) {
-    let result = "";
-
-    for (let i = 0; i < length; i++) {
-      result += Math.floor(Math.random() * 10);
-    }
-
-    return result;
-  }
-
-  function scrambleGuesses(finalValue) {
-    clearInterval(scrambleTimer);
-
-    let elapsed = 0;
+    const entropyEl = document.getElementById("entropy");
+    const guessesEl = document.getElementById("guesses");
+    const crackTimeEl = document.getElementById("crackTime");
+    const lengthEl = document.getElementById("length");
+    const issuesEl = document.getElementById("issues");
 
     /*
-      Start with a long random-looking number.
+      Local common-password dictionary.
+
+      This is intentionally stored directly in the page,
+      so checking it never requires sending the password anywhere.
     */
-    guessesEl.textContent = randomDigits(
-      Math.max(10, Math.min(17, String(finalValue).length + 4))
-    );
+    const commonPasswords = new Set([
+      "password",
+      "password1",
+      "password123",
+      "123456",
+      "1234567",
+      "12345678",
+      "123456789",
+      "1234567890",
+      "qwerty",
+      "qwerty123",
+      "qwertyuiop",
+      "abc123",
+      "abc1234",
+      "admin",
+      "admin123",
+      "welcome",
+      "welcome1",
+      "letmein",
+      "monkey",
+      "dragon",
+      "football",
+      "baseball",
+      "iloveyou",
+      "princess",
+      "sunshine",
+      "master",
+      "login",
+      "hello",
+      "freedom",
+      "whatever",
+      "secret",
+      "shadow",
+      "superman",
+      "trustno1"
+    ]);
 
-    scrambleTimer = setInterval(() => {
-      elapsed += 45;
+    /* Show / hide password */
+    toggle.addEventListener("click", () => {
+      const showing = passwordInput.type === "text";
 
-      /*
-        Make the fake number change rapidly.
-      */
-      const length = Math.max(
-        10,
-        Math.min(17, String(finalValue).length + 4)
+      passwordInput.type = showing ? "password" : "text";
+      toggle.textContent = showing ? "◉" : "◌";
+      toggle.setAttribute(
+        "aria-label",
+        showing ? "Show password" : "Hide password"
       );
+    });
+
+    /* Lightweight tooltip system */
+    document.querySelectorAll(".info-btn").forEach(button => {
+      button.addEventListener("click", event => {
+        event.stopPropagation();
+
+        document.querySelectorAll(".tooltip").forEach(t => t.remove());
+
+        const tooltip = document.createElement("div");
+        tooltip.className = "tooltip";
+        tooltip.textContent = button.dataset.info;
+
+        button.parentElement.parentElement.appendChild(tooltip);
+      });
+    });
+
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".tooltip").forEach(t => t.remove());
+    });
+
+    function getCharacterPool(password) {
+      let pool = 0;
+
+      if (/[a-z]/.test(password)) pool += 26;
+      if (/[A-Z]/.test(password)) pool += 26;
+      if (/[0-9]/.test(password)) pool += 10;
+      if (/[^A-Za-z0-9]/.test(password)) pool += 33;
+
+      return pool;
+    }
+
+    function calculateEntropy(password) {
+      if (!password) return 0;
+
+      const pool = getCharacterPool(password);
+
+      if (!pool) return 0;
+
+      return password.length * Math.log2(pool);
+    }
+
+    function hasRepeatedCharacters(password) {
+      return /(.)\1{2,}/.test(password);
+    }
+
+    function hasSequence(password) {
+      const lower = password.toLowerCase();
+
+      for (let i = 0; i < lower.length - 2; i++) {
+        const a = lower.charCodeAt(i);
+        const b = lower.charCodeAt(i + 1);
+        const c = lower.charCodeAt(i + 2);
+
+        if (
+          (b === a + 1 && c === b + 1) ||
+          (b === a - 1 && c === b - 1)
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function hasKeyboardPattern(password) {
+      const lower = password.toLowerCase();
+
+      const patterns = [
+        "qwerty",
+        "asdfgh",
+        "zxcvbn",
+        "qwertyuiop",
+        "asdfghjkl",
+        "zxcvbnm"
+      ];
+
+      return patterns.some(pattern => lower.includes(pattern));
+    }
+
+    function containsYear(password) {
+      return /(19|20)\d{2}/.test(password);
+    }
+
+    function containsCommonPassword(password) {
+      const lower = password.toLowerCase();
+
+      for (const word of commonPasswords) {
+        if (lower === word || lower.includes(word)) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function commonWordPlusNumbers(password) {
+      const lower = password.toLowerCase();
+      const stripped = lower.replace(/\d+$/, "");
+
+      return (
+        stripped.length >= 3 &&
+        commonPasswords.has(stripped)
+      );
+    }
+
+    function formatNumber(number) {
+      if (number < 1000) {
+        return Math.round(number).toString();
+      }
+
+      if (number < 1e6) {
+        return (number / 1e3).toFixed(1) + "K";
+      }
+
+      if (number < 1e9) {
+        return (number / 1e6).toFixed(1) + "M";
+      }
+
+      if (number < 1e12) {
+        return (number / 1e9).toFixed(1) + "B";
+      }
+
+      if (number < 1e15) {
+        return (number / 1e12).toFixed(1) + "T";
+      }
+
+      return number.toExponential(1);
+    }
+
+    function calculateCrackTime(guesses) {
+      if (!guesses) return "—";
+
+      const guessesPerSecond = 1e10;
+      const seconds = guesses / guessesPerSecond;
+
+      if (seconds < 1) return "< 1 sec";
+      if (seconds < 60) return Math.round(seconds) + " sec";
+      if (seconds < 3600) return Math.round(seconds / 60) + " min";
+      if (seconds < 86400) return Math.round(seconds / 3600) + " hrs";
+      if (seconds < 31557600) return Math.round(seconds / 86400) + " days";
+      if (seconds < 3155760000) {
+        return Math.round(seconds / 31557600) + " years";
+      }
+
+      return "Centuries";
+    }
+
+    function addIssue(text, type = "normal") {
+      const item = document.createElement("div");
+      item.className = "issue";
+
+      const dot = document.createElement("div");
+      dot.className = "issue-dot";
+
+      if (type === "warning") {
+        dot.style.background = "var(--danger)";
+      }
+
+      const message = document.createElement("div");
+      message.textContent = text;
+
+      item.appendChild(dot);
+      item.appendChild(message);
+
+      issuesEl.appendChild(item);
+    }
+
+    // Scramble the guesses number briefly whenever the password changes.
+    let scrambleTimer = null;
+
+    function randomDigits(length) {
+      let result = "";
+      for (let i = 0; i < length; i++) {
+        result += Math.floor(Math.random() * 10);
+      }
+      return result;
+    }
+
+    function scrambleGuesses(finalValue) {
+      clearInterval(scrambleTimer);
+
+      let elapsed = 0;
+      const length = String(Math.floor(finalValue)).length;
 
       guessesEl.textContent = randomDigits(length);
 
-      /*
-        After ~250ms, show the actual result.
-      */
-      if (elapsed >= 250) {
-        clearInterval(scrambleTimer);
-        guessesEl.textContent = formatNumber(finalValue);
+      scrambleTimer = setInterval(() => {
+        elapsed += 45;
+        guessesEl.textContent = randomDigits(length);
+
+        if (elapsed >= 250) {
+          clearInterval(scrambleTimer);
+          guessesEl.textContent = formatNumber(finalValue);
+        }
+      }, 45);
+    }
+
+    function analyze(password) {
+      if (!password) {
+        orbScore.textContent = "0%";
+        strengthText.textContent = "Waiting for a password";
+        strengthDescription.textContent =
+          "Enter a password above and the analysis will happen locally.";
+
+        progressFill.style.width = "0%";
+        orb.style.background =
+          "radial-gradient(circle at center, rgba(115, 213, 173, 0.08) 0 53%, transparent 54%), conic-gradient(var(--green) 0deg, rgba(255,255,255,0.06) 0deg)";
+
+        entropyEl.textContent = "—";
+        guessesEl.textContent = "—";
+        crackTimeEl.textContent = "—";
+        lengthEl.textContent = "0 chars";
+        issuesEl.textContent =
+          "Enter a password to see detected patterns.";
+
+        return;
       }
-    }, 45);
-  }
 
-  function analyze(password) {
-    if (!password) {
-      clearInterval(scrambleTimer);
+      const rawEntropy = calculateEntropy(password);
 
-      orbScore.textContent = "0%";
-      strengthText.textContent = "Waiting for a password";
+      let effectiveEntropy = rawEntropy;
+      const findings = [];
 
-      strengthDescription.textContent =
-        "Enter a password above and the analysis will happen locally.";
+      const common = containsCommonPassword(password);
+      const commonPlusNumbers = commonWordPlusNumbers(password);
+      const repeated = hasRepeatedCharacters(password);
+      const sequence = hasSequence(password);
+      const keyboard = hasKeyboardPattern(password);
+      const year = containsYear(password);
 
-      progressFill.style.width = "0%";
+      if (common) {
+        effectiveEntropy -= 25;
+        findings.push({
+          text: "Contains a commonly used password or word.",
+          type: "warning"
+        });
+      }
+
+      if (commonPlusNumbers) {
+        effectiveEntropy -= 10;
+        findings.push({
+          text: "Uses a common word followed by numbers.",
+          type: "warning"
+        });
+      }
+
+      if (repeated) {
+        effectiveEntropy -= 8;
+        findings.push({
+          text: "Contains repeated characters.",
+          type: "warning"
+        });
+      }
+
+      if (sequence) {
+        effectiveEntropy -= 8;
+        findings.push({
+          text: "Contains a predictable sequence.",
+          type: "warning"
+        });
+      }
+
+      if (keyboard) {
+        effectiveEntropy -= 12;
+        findings.push({
+          text: "Contains a recognizable keyboard pattern.",
+          type: "warning"
+        });
+      }
+
+      if (year) {
+        effectiveEntropy -= 5;
+        findings.push({
+          text: "Contains a four-digit year.",
+          type: "warning"
+        });
+      }
+
+      effectiveEntropy = Math.max(0, effectiveEntropy);
+
+      /*
+        Convert the heuristic entropy into a simple visual score.
+      */
+      let score;
+
+      if (effectiveEntropy < 25) {
+        score = 15;
+      } else if (effectiveEntropy < 40) {
+        score = 30;
+      } else if (effectiveEntropy < 60) {
+        score = 55;
+      } else if (effectiveEntropy < 80) {
+        score = 78;
+      } else {
+        score = 96;
+      }
+
+      let label;
+      let description;
+
+      if (effectiveEntropy < 25) {
+        label = "Very weak";
+        description =
+          "This password has patterns that make guessing significantly easier.";
+      } else if (effectiveEntropy < 40) {
+        label = "Weak";
+        description =
+          "It has some useful complexity, but predictable patterns reduce its strength.";
+      } else if (effectiveEntropy < 60) {
+        label = "Moderate";
+        description =
+          "This is reasonably complex, but adding length would improve it.";
+      } else if (effectiveEntropy < 80) {
+        label = "Strong";
+        description =
+          "Good complexity and length make this considerably harder to guess.";
+      } else {
+        label = "Very strong";
+        description =
+          "This password has high estimated resistance to large-scale guessing.";
+      }
+
+      const guesses = Math.pow(2, effectiveEntropy);
+
+      entropyEl.textContent =
+        effectiveEntropy.toFixed(1) + " bits";
+
+      scrambleGuesses(guesses);
+
+      crackTimeEl.textContent =
+        calculateCrackTime(guesses);
+
+      lengthEl.textContent =
+        password.length + " chars";
+
+      orbScore.textContent = score + "%";
+      strengthText.textContent = label;
+      strengthDescription.textContent = description;
+      progressFill.style.width = score + "%";
+
+      const degrees = score * 3.6;
 
       orb.style.background =
-        "radial-gradient(circle at center, rgba(115, 213, 173, 0.08) 0 53%, transparent 54%), conic-gradient(var(--green) 0deg, rgba(255,255,255,0.06) 0deg)";
+        `radial-gradient(circle at center, rgba(115, 213, 173, 0.08) 0 53%, transparent 54%),
+         conic-gradient(var(--green) ${degrees}deg, rgba(255,255,255,0.06) ${degrees}deg)`;
 
-      entropyEl.textContent = "—";
-      guessesEl.textContent = "—";
-      crackTimeEl.textContent = "—";
-      lengthEl.textContent = "0 chars";
+      issuesEl.innerHTML = "";
 
-      issuesEl.textContent =
-        "Enter a password to see detected patterns.";
-
-      return;
+      if (findings.length === 0) {
+        addIssue("No major predictable patterns detected.");
+      } else {
+        findings.forEach(finding => {
+          addIssue(finding.text, finding.type);
+        });
+      }
     }
-
-    const rawEntropy = calculateEntropy(password);
-
-    let effectiveEntropy = rawEntropy;
-    const findings = [];
-
-    const common = containsCommonPassword(password);
-    const commonPlusNumbers = commonWordPlusNumbers(password);
-    const repeated = hasRepeatedCharacters(password);
-    const sequence = hasSequence(password);
-    const keyboard = hasKeyboardPattern(password);
-    const year = containsYear(password);
-
-    if (common) {
-      effectiveEntropy -= 25;
-
-      findings.push({
-        text: "Contains a commonly used password or word.",
-        type: "warning"
-      });
-    }
-
-    if (commonPlusNumbers) {
-      effectiveEntropy -= 10;
-
-      findings.push({
-        text: "Uses a common word followed by numbers.",
-        type: "warning"
-      });
-    }
-
-    if (repeated) {
-      effectiveEntropy -= 8;
-
-      findings.push({
-        text: "Contains repeated characters.",
-        type: "warning"
-      });
-    }
-
-    if (sequence) {
-      effectiveEntropy -= 8;
-
-      findings.push({
-        text: "Contains a predictable sequence.",
-        type: "warning"
-      });
-    }
-
-    if (keyboard) {
-      effectiveEntropy -= 12;
-
-      findings.push({
-        text: "Contains a recognizable keyboard pattern.",
-        type: "warning"
-      });
-    }
-
-    if (year) {
-      effectiveEntropy -= 5;
-
-      findings.push({
-        text: "Contains a four-digit year.",
-        type: "warning"
-      });
-    }
-
-    effectiveEntropy = Math.max(0, effectiveEntropy);
-
-    let score;
-
-    if (effectiveEntropy < 25) {
-      score = 15;
-    } else if (effectiveEntropy < 40) {
-      score = 30;
-    } else if (effectiveEntropy < 60) {
-      score = 55;
-    } else if (effectiveEntropy < 80) {
-      score = 78;
-    } else {
-      score = 96;
-    }
-
-    let label;
-    let description;
-
-    if (effectiveEntropy < 25) {
-      label = "Very weak";
-      description =
-        "This password has patterns that make guessing significantly easier.";
-    } else if (effectiveEntropy < 40) {
-      label = "Weak";
-      description =
-        "It has some useful complexity, but predictable patterns reduce its strength.";
-    } else if (effectiveEntropy < 60) {
-      label = "Moderate";
-      description =
-        "This is reasonably complex, but adding length would improve it.";
-    } else if (effectiveEntropy < 80) {
-      label = "Strong";
-      description =
-        "Good complexity and length make this considerably harder to guess.";
-    } else {
-      label = "Very strong";
-      description =
-        "This password has high estimated resistance to large-scale guessing.";
-    }
-
-    const guesses = Math.pow(2, effectiveEntropy);
-
-    entropyEl.textContent =
-      effectiveEntropy.toFixed(1) + " bits";
 
     /*
-      Instead of immediately displaying the answer,
-      scramble the number first.
+      input event is efficient enough for this page because
+      the analysis is entirely local and very lightweight.
     */
-    scrambleGuesses(guesses);
+    passwordInput.addEventListener("input", () => {
+      analyze(passwordInput.value);
+    });
 
-    crackTimeEl.textContent =
-      calculateCrackTime(guesses);
-
-    lengthEl.textContent =
-      password.length + " chars";
-
-    orbScore.textContent = score + "%";
-    strengthText.textContent = label;
-    strengthDescription.textContent = description;
-    progressFill.style.width = score + "%";
-
-    const degrees = score * 3.6;
-
-    orb.style.background =
-      `radial-gradient(circle at center, rgba(115, 213, 173, 0.08) 0 53%, transparent 54%),
-       conic-gradient(var(--green) ${degrees}deg, rgba(255,255,255,0.06) ${degrees}deg)`;
-
-    issuesEl.innerHTML = "";
-
-    if (findings.length === 0) {
-      addIssue("No major predictable patterns detected.");
-    } else {
-      findings.forEach(finding => {
-        addIssue(finding.text, finding.type);
-      });
-    }
-  }
-
-  passwordInput.addEventListener("input", () => {
-    analyze(passwordInput.value);
-  });
-
-  analyze("");
-</script>
+    analyze("");
+  </script>
 
 </body>
 </html>
-
