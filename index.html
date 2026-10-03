@@ -23,6 +23,12 @@
       --max: 1080px;
     }
 
+    @property --deg {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+
     * { box-sizing: border-box; }
 
     html { scroll-behavior: smooth; }
@@ -209,8 +215,8 @@
       border-radius: 50%;
       background:
         radial-gradient(circle at center, rgba(184, 243, 107, .08) 0 53%, transparent 54%),
-        conic-gradient(var(--green) 0deg, rgba(255,255,255,0.06) 0deg);
-      transition: background .25s ease;
+        conic-gradient(var(--green) var(--deg), rgba(255,255,255,0.06) var(--deg));
+      transition: --deg .3s ease;
     }
 
     .orb::before {
@@ -618,7 +624,7 @@
 
     <footer>
       <span>© <span id="year"></span> Josh Koppanalil</span>
-      <span>JK. Security · Password analysis performed locally</span>
+      <span>JK Security · Password analysis performed locally</span>
     </footer>
 
   </div>
@@ -911,8 +917,7 @@
           "Enter a password above and the analysis will happen locally.";
 
         progressFill.style.width = "0%";
-        orb.style.background =
-          "radial-gradient(circle at center, rgba(184, 243, 107, .08) 0 53%, transparent 54%), conic-gradient(var(--green) 0deg, rgba(255,255,255,0.06) 0deg)";
+        orb.style.setProperty("--deg", "0deg");
 
         entropyEl.textContent = "—";
         guessesEl.textContent = "—";
@@ -1048,9 +1053,7 @@
 
       const degrees = score * 3.6;
 
-      orb.style.background =
-        `radial-gradient(circle at center, rgba(184, 243, 107, .08) 0 53%, transparent 54%),
-         conic-gradient(var(--green) ${degrees}deg, rgba(255,255,255,0.06) ${degrees}deg)`;
+      orb.style.setProperty("--deg", degrees + "deg");
 
       issuesEl.innerHTML = "";
 
