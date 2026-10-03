@@ -1,721 +1,862 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Password Bloom</title>
 
 <style>
-
 * {
     box-sizing: border-box;
+}
+
+:root {
+    --bg: #07111a;
+    --panel: rgba(17, 31, 42, 0.72);
+    --panel-light: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.09);
+    --text: #edf7f4;
+    --muted: #8da19f;
+    --green: #73d5ad;
+    --green-soft: #b4f1d6;
+    --blue: #77b9e8;
+    --danger: #f28d8d;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
     margin: 0;
     min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #24323a;
-
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
     background:
-        radial-gradient(circle at 15% 20%, rgba(180, 230, 210, .7), transparent 30%),
-        radial-gradient(circle at 85% 15%, rgba(210, 225, 250, .8), transparent 30%),
-        radial-gradient(circle at 70% 85%, rgba(240, 220, 240, .7), transparent 30%),
-        linear-gradient(135deg, #eef8f3, #f5f8fc 50%, #f8f1f8);
-
-    display: flex;
-    justify-content: center;
-    padding: 50px 18px;
+        radial-gradient(circle at 10% 10%, rgba(83, 182, 144, .15), transparent 30%),
+        radial-gradient(circle at 90% 15%, rgba(76, 137, 204, .13), transparent 28%),
+        radial-gradient(circle at 80% 90%, rgba(140, 101, 196, .12), transparent 30%),
+        var(--bg);
+    overflow-x: hidden;
 }
 
+/* Ambient background */
 
-/* =========================
-   BACKGROUND BLOOMS
-========================= */
-
-body::before,
-body::after {
-    content: "";
+.ambient {
     position: fixed;
+    width: 420px;
+    height: 420px;
     border-radius: 50%;
-    filter: blur(70px);
+    filter: blur(110px);
+    opacity: .18;
     pointer-events: none;
     z-index: -1;
+    animation: float 10s ease-in-out infinite alternate;
 }
 
-body::before {
-    width: 280px;
-    height: 280px;
-    background: rgba(143, 211, 183, .25);
-    top: 8%;
-    left: 5%;
+.ambient.one {
+    background: #56c596;
+    left: -180px;
+    top: 10%;
 }
 
-body::after {
-    width: 320px;
-    height: 320px;
-    background: rgba(191, 181, 231, .22);
+.ambient.two {
+    background: #5d91d4;
+    right: -180px;
     bottom: 5%;
-    right: 5%;
+    animation-delay: -4s;
 }
 
-
-/* =========================
-   MAIN
-========================= */
-
-.container {
-    width: 100%;
-    max-width: 760px;
+@keyframes float {
+    from {
+        transform: translateY(-20px);
+    }
+    to {
+        transform: translateY(25px);
+    }
 }
 
-.card {
-    background: rgba(255, 255, 255, .78);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+/* Page */
 
-    border: 1px solid rgba(255, 255, 255, .8);
-
-    border-radius: 28px;
-    padding: 38px;
-
-    box-shadow:
-        0 25px 70px rgba(72, 92, 88, .12),
-        0 5px 20px rgba(72, 92, 88, .06);
+.wrapper {
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 45px 0 70px;
 }
 
+/* Header */
 
-/* =========================
-   HEADER
-========================= */
-
-.logo {
-    width: 64px;
-    height: 64px;
-
-    margin: 0 auto 18px;
-
-    border-radius: 50%;
-
+header {
     display: flex;
     align-items: center;
-    justify-content: center;
-
-    font-size: 30px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #d8f1e3,
-            #e9def4
-        );
-
-    box-shadow:
-        0 10px 25px rgba(100, 130, 120, .15);
+    justify-content: space-between;
+    margin-bottom: 45px;
 }
 
-h1 {
-    text-align: center;
-    margin: 0;
-    font-size: 30px;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #75d9af, #4f9fc4);
+    color: #07111a;
+    font-weight: 900;
+    box-shadow: 0 8px 30px rgba(93, 206, 164, .2);
+}
+
+.brand-name {
     font-weight: 700;
-    letter-spacing: -.5px;
+    letter-spacing: -.3px;
 }
 
-.subtitle {
+.private-pill {
+    padding: 8px 13px;
+    border: 1px solid rgba(115, 213, 173, .18);
+    background: rgba(115, 213, 173, .06);
+    color: var(--green-soft);
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+/* Hero */
+
+.hero {
     text-align: center;
-    color: #718087;
-    margin: 10px auto 32px;
-    max-width: 520px;
-    line-height: 1.5;
+    margin-bottom: 35px;
 }
 
+.eyebrow {
+    color: var(--green);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 13px;
+}
 
-/* =========================
-   INPUT
-========================= */
+.hero h1 {
+    font-size: clamp(38px, 6vw, 64px);
+    line-height: .98;
+    letter-spacing: -3px;
+    margin: 0;
+}
 
-.passwordRow {
+.hero h1 span {
+    color: var(--green);
+}
+
+.hero p {
+    max-width: 580px;
+    margin: 18px auto 0;
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 15px;
+}
+
+/* Main panel */
+
+.main-card {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-radius: 30px;
+    padding: clamp(22px, 5vw, 45px);
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+/* Input */
+
+.input-label {
+    display: block;
+    color: #b8c8c6;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.input-wrap {
     display: flex;
     gap: 10px;
 }
 
-input {
+.input-wrap input {
+    min-width: 0;
     flex: 1;
-
-    padding: 16px 17px;
-
-    border-radius: 14px;
-
-    border: 1px solid #d8e2df;
-
-    background: rgba(255,255,255,.8);
-
-    color: #24323a;
-
-    font-size: 16px;
-
-    outline: none;
-
-    transition:
-        border .2s,
-        box-shadow .2s;
-}
-
-input::placeholder {
-    color: #a2afb3;
-}
-
-input:focus {
-    border-color: #9ccdb7;
-
-    box-shadow:
-        0 0 0 4px rgba(156,205,183,.15);
-}
-
-button {
-    border: none;
-
-    border-radius: 14px;
-
-    padding: 0 20px;
-
-    background: #8fc7ad;
-
+    height: 58px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,.2);
     color: white;
+    padding: 0 18px;
+    outline: none;
+    font-size: 16px;
+    transition: .25s;
+}
 
-    font-size: 14px;
+.input-wrap input:focus {
+    border-color: rgba(115,213,173,.55);
+    box-shadow: 0 0 0 4px rgba(115,213,173,.07);
+}
 
+.input-wrap input::placeholder {
+    color: #60716f;
+}
+
+.show-btn {
+    height: 58px;
+    border-radius: 16px;
+    padding: 0 20px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid var(--border);
+    color: #d6e3e0;
     cursor: pointer;
-
-    transition:
-        background .2s,
-        transform .2s;
+    transition: .2s;
 }
 
-button:hover {
-    background: #7bb99e;
-    transform: translateY(-1px);
+.show-btn:hover {
+    background: rgba(255,255,255,.11);
 }
 
+/* Strength */
 
-/* =========================
-   STRENGTH
-========================= */
-
-.strength {
-    margin-top: 27px;
+.strength-area {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 35px;
+    align-items: center;
+    margin-top: 40px;
 }
 
-.bar {
-    height: 11px;
+/* Orb */
 
-    width: 100%;
+.orb-wrap {
+    display: grid;
+    place-items: center;
+}
 
-    background: #e4ebe8;
+.orb {
+    width: 155px;
+    height: 155px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    position: relative;
+    background: conic-gradient(
+        var(--green) 0deg,
+        rgba(255,255,255,.04) 0deg
+    );
+    transition: background .5s ease;
+    box-shadow:
+        0 0 60px rgba(115,213,173,.08);
+}
 
+.orb::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    background: #0c1821;
+    border: 1px solid rgba(255,255,255,.05);
+}
+
+.orb-content {
+    position: relative;
+    text-align: center;
+}
+
+.orb-score {
+    font-size: 28px;
+    font-weight: 750;
+}
+
+.orb-label {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+/* Strength details */
+
+.strength-details h2 {
+    margin: 0;
+    font-size: 25px;
+}
+
+.strength-details p {
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: 14px;
+    margin: 9px 0 18px;
+}
+
+.progress {
+    height: 7px;
     border-radius: 20px;
-
+    background: rgba(255,255,255,.06);
     overflow: hidden;
 }
 
-#barFill {
+.progress-fill {
     height: 100%;
-
-    width: 0%;
-
-    border-radius: 20px;
-
-    background: #9ccdb7;
-
-    transition:
-        width .4s ease,
-        background .4s ease;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #62cba0, #8bd8b9);
+    transition: width .5s ease;
 }
 
-#strengthText {
-    text-align: center;
+/* Metrics */
 
-    margin-top: 12px;
-
-    font-size: 20px;
-
-    font-weight: 600;
-
-    color: #53666b;
-}
-
-
-/* =========================
-   STAT CARDS
-========================= */
-
-.stats {
+.metrics {
     display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 14px;
-
-    margin-top: 28px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 35px;
 }
 
-.stat {
-    background: rgba(247,250,249,.9);
-
-    border: 1px solid #e3ebe8;
-
-    padding: 18px;
-
-    border-radius: 16px;
-
-    transition:
-        transform .2s,
-        box-shadow .2s;
+.metric {
+    min-height: 105px;
+    padding: 17px;
+    border-radius: 17px;
+    background: var(--panel-light);
+    border: 1px solid var(--border);
 }
 
-.stat:hover {
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 8px 20px rgba(80,100,95,.08);
-}
-
-.statTitle {
-    color: #829095;
-
-    font-size: 13px;
-
+.metric-top {
     display: flex;
-
     align-items: center;
-
-    gap: 7px;
+    justify-content: space-between;
 }
 
-.statValue {
-    margin-top: 7px;
+.metric-name {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+}
 
+.metric-value {
+    margin-top: 13px;
     font-size: 20px;
-
-    font-weight: 600;
-
-    color: #35474d;
+    font-weight: 700;
 }
 
+/* Info */
 
-/* =========================
-   INFO BUTTONS
-========================= */
-
-.infoContainer {
+.info {
     position: relative;
 }
 
-.infoButton {
+.info-btn {
     width: 18px;
     height: 18px;
-
-    padding: 0;
-
     border-radius: 50%;
-
-    background: #c8d8d2;
-
-    color: white;
-
-    font-size: 11px;
-
-    font-weight: bold;
-
-    display: inline-flex;
-
-    align-items: center;
-    justify-content: center;
-
+    border: 1px solid rgba(255,255,255,.13);
+    background: rgba(255,255,255,.06);
+    color: #aebfbc;
     cursor: pointer;
-}
-
-.infoButton:hover {
-    background: #9fc1b3;
+    padding: 0;
+    font-size: 10px;
 }
 
 .tooltip {
     position: absolute;
-
-    width: 245px;
-
-    left: 50%;
-    top: 27px;
-
-    transform: translateX(-50%);
-
-    background: #ffffff;
-
-    border: 1px solid #dce7e3;
-
-    border-radius: 12px;
-
+    z-index: 50;
+    width: 240px;
+    right: 0;
+    top: 28px;
     padding: 13px;
-
+    border-radius: 12px;
+    background: #12212b;
+    border: 1px solid var(--border);
+    color: #b9c8c6;
     font-size: 12px;
-
-    color: #64757a;
-
     line-height: 1.5;
-
-    box-shadow:
-        0 12px 30px rgba(60,80,75,.14);
-
-    z-index: 20;
+    box-shadow: 0 15px 40px rgba(0,0,0,.3);
 }
 
+/* Analysis */
 
-/* =========================
-   ANALYSIS
-========================= */
-
-.section {
-    margin-top: 30px;
+.analysis {
+    margin-top: 35px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
-.section h2 {
-    font-size: 18px;
+.analysis-card {
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,.025);
+}
 
-    margin-bottom: 12px;
-
-    color: #43575d;
+.analysis-card h3 {
+    margin: 0 0 15px;
+    font-size: 14px;
 }
 
 .issue {
-    padding: 13px;
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    color: #c7d3d1;
+    font-size: 13px;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+}
 
-    margin-top: 8px;
+.issue:last-child {
+    border-bottom: 0;
+}
 
-    border-radius: 12px;
-
-    background: #fff4f2;
-
-    border: 1px solid #f1d9d4;
-
-    color: #9a6861;
-
-    line-height: 1.4;
+.issue-dot {
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: var(--danger);
 }
 
 .good {
-    padding: 13px;
-
-    margin-top: 8px;
-
-    border-radius: 12px;
-
-    background: #eef9f2;
-
-    border: 1px solid #d4ebdc;
-
-    color: #5d896d;
+    color: var(--green-soft);
+    font-size: 13px;
+    line-height: 1.6;
 }
 
-
-/* =========================
-   PRIVACY
-========================= */
+/* Privacy */
 
 .privacy {
-    margin-top: 26px;
-
-    padding: 16px;
-
-    border-radius: 14px;
-
-    background: #f1f6fb;
-
-    border: 1px solid #dce7f0;
-
-    color: #667982;
-
-    font-size: 13px;
-
-    line-height: 1.5;
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 17px;
+    border: 1px solid rgba(115,213,173,.1);
+    background: rgba(115,213,173,.035);
+    display: flex;
+    gap: 12px;
+    color: #9fb3ae;
+    font-size: 12px;
+    line-height: 1.6;
 }
 
+.privacy-icon {
+    color: var(--green);
+}
 
-/* =========================
-   MOBILE
-========================= */
+/* Footer */
 
-@media (max-width: 600px) {
+footer {
+    text-align: center;
+    color: #536461;
+    font-size: 11px;
+    margin-top: 25px;
+}
 
-    body {
-        padding: 25px 12px;
+/* Responsive */
+
+@media (max-width: 800px) {
+    .strength-area {
+        grid-template-columns: 1fr;
+        text-align: center;
     }
 
-    .card {
-        padding: 25px 20px;
-        border-radius: 22px;
+    .orb-wrap {
+        margin-bottom: 5px;
     }
 
-    .stats {
+    .metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .analysis {
         grid-template-columns: 1fr;
     }
+}
 
-    .passwordRow {
+@media (max-width: 520px) {
+    .wrapper {
+        width: min(100% - 20px, 1100px);
+        padding-top: 25px;
+    }
+
+    header {
+        margin-bottom: 30px;
+    }
+
+    .private-pill {
+        display: none;
+    }
+
+    .hero h1 {
+        letter-spacing: -2px;
+    }
+
+    .input-wrap {
         flex-direction: column;
     }
 
-    button {
-        padding: 14px;
+    .show-btn {
+        width: 100%;
     }
 
-    .tooltip {
-        left: 0;
-        transform: none;
+    .metrics {
+        grid-template-columns: 1fr 1fr;
     }
 
+    .main-card {
+        border-radius: 23px;
+    }
 }
-
 </style>
 </head>
 
-
 <body>
 
-<div class="container">
+<div class="ambient one"></div>
+<div class="ambient two"></div>
 
-<div class="card">
+<div class="wrapper">
 
+<header>
+    <div class="brand">
+        <div class="brand-mark">✦</div>
+        <div class="brand-name">Password Bloom</div>
+    </div>
 
-<div class="logo">
-    🌿
-</div>
+    <div class="private-pill">
+        ● 100% client-side
+    </div>
+</header>
 
 
-<h1>Password Bloom</h1>
+<section class="hero">
 
-<p class="subtitle">
-A calm, private way to understand how resistant your password
-is to common guessing techniques.
-</p>
+    <div class="eyebrow">Password Intelligence</div>
 
+    <h1>
+        Grow a stronger<br>
+        <span>digital lock.</span>
+    </h1>
 
-<div class="passwordRow">
+    <p>
+        Understand how predictable your password is
+        using entropy estimates, pattern detection,
+        and common-password analysis.
+    </p>
 
-<input
-    id="password"
-    type="password"
-    placeholder="Enter a password..."
-    autocomplete="off"
->
+</section>
 
-<button id="toggle">
-    Show
-</button>
 
-</div>
+<main class="main-card">
 
+    <label class="input-label">
+        Password to analyze
+    </label>
 
-<div class="strength">
+    <div class="input-wrap">
 
-<div class="bar">
+        <input
+            id="password"
+            type="password"
+            autocomplete="off"
+            placeholder="Type a password..."
+        >
 
-<div id="barFill"></div>
+        <button class="show-btn" id="toggle">
+            Show
+        </button>
 
-</div>
+    </div>
 
-<div id="strengthText">
-Enter a password
-</div>
 
-</div>
+    <section class="strength-area">
 
+        <div class="orb-wrap">
 
-<div class="stats">
+            <div class="orb" id="orb">
 
+                <div class="orb-content">
 
-<div class="stat">
+                    <div class="orb-score" id="orbScore">
+                        —
+                    </div>
 
-<div class="statTitle">
+                    <div class="orb-label">
+                        SECURITY
+                    </div>
 
-Entropy
+                </div>
 
-<div class="infoContainer">
+            </div>
 
-<button
-    class="infoButton"
-    data-info="Entropy is a measure of unpredictability. Higher entropy generally means there are more possible combinations an attacker would need to consider."
->
-?
-</button>
+        </div>
 
-</div>
 
-</div>
+        <div class="strength-details">
 
-<div class="statValue" id="entropy">
--
-</div>
+            <h2 id="strengthText">
+                Waiting for a password
+            </h2>
 
-</div>
+            <p id="strengthDescription">
+                Enter a password above and the analyzer
+                will look for predictable patterns.
+            </p>
 
+            <div class="progress">
 
-<div class="stat">
+                <div
+                    class="progress-fill"
+                    id="progressFill">
+                </div>
 
-<div class="statTitle">
+            </div>
 
-Estimated guesses
+        </div>
 
-<div class="infoContainer">
+    </section>
 
-<button
-    class="infoButton"
-    data-info="This estimates the number of guesses needed in a simplified brute-force model. Real attackers can use dictionaries, leaked passwords, and other techniques."
->
-?
-</button>
 
-</div>
+    <section class="metrics">
 
-</div>
 
-<div class="statValue" id="guesses">
--
-</div>
+        <div class="metric">
 
-</div>
+            <div class="metric-top">
 
+                <div class="metric-name">
+                    Entropy
+                </div>
 
-<div class="stat">
+                <div class="info">
 
-<div class="statTitle">
+                    <button
+                        class="info-btn"
+                        data-info="Entropy is an estimate of how unpredictable a password is. Higher entropy generally means more possible combinations."
+                    >?</button>
 
-Estimated crack time
+                </div>
 
-<div class="infoContainer">
+            </div>
 
-<button
-    class="infoButton"
-    data-info="This is an approximate calculation using a hypothetical offline attacker. Actual cracking speed depends heavily on the password hashing algorithm and hardware."
->
-?
-</button>
+            <div
+                class="metric-value"
+                id="entropy">
+                —
+            </div>
 
-</div>
+        </div>
 
-</div>
 
-<div class="statValue" id="crackTime">
--
-</div>
+        <div class="metric">
 
-</div>
+            <div class="metric-top">
 
+                <div class="metric-name">
+                    Guesses
+                </div>
 
-<div class="stat">
+                <div class="info">
 
-<div class="statTitle">
+                    <button
+                        class="info-btn"
+                        data-info="An approximate number of guesses in a simplified brute-force model. Real attacks can use much smarter techniques."
+                    >?</button>
 
-Length
+                </div>
 
-<div class="infoContainer">
+            </div>
 
-<button
-    class="infoButton"
-    data-info="The number of characters in the password. Longer passwords are generally harder to brute-force when they are not based on predictable patterns."
->
-?
-</button>
+            <div
+                class="metric-value"
+                id="guesses">
+                —
+            </div>
 
-</div>
+        </div>
 
-</div>
 
-<div class="statValue" id="length">
-0
-</div>
+        <div class="metric">
 
-</div>
+            <div class="metric-top">
 
+                <div class="metric-name">
+                    Crack time
+                </div>
 
-</div>
+                <div class="info">
 
+                    <button
+                        class="info-btn"
+                        data-info="An estimate based on a hypothetical offline attacker making 10 billion guesses per second. Real results depend heavily on the hashing system and hardware."
+                    >?</button>
 
-<div class="section">
+                </div>
 
-<h2>Security Analysis</h2>
+            </div>
 
-<div id="analysis">
-Enter a password to begin the analysis.
-</div>
+            <div
+                class="metric-value"
+                id="crackTime">
+                —
+            </div>
 
-</div>
+        </div>
 
 
-<div class="privacy">
+        <div class="metric">
 
-<strong>Private by design.</strong>
+            <div class="metric-top">
 
-Your password is analyzed entirely in your browser.
-It is never sent to a server, API, database, or third-party service.
+                <div class="metric-name">
+                    Length
+                </div>
 
-</div>
+                <div class="info">
 
+                    <button
+                        class="info-btn"
+                        data-info="The total number of characters in the password. Length is one of the most important factors in resisting brute-force guessing."
+                    >?</button>
 
-</div>
+                </div>
+
+            </div>
+
+            <div
+                class="metric-value"
+                id="length">
+                0
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <section class="analysis">
+
+        <div class="analysis-card">
+
+            <h3>
+                Pattern analysis
+            </h3>
+
+            <div id="issues">
+                <div class="good">
+                    Enter a password to begin analysis.
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="analysis-card">
+
+            <h3>
+                What makes it stronger?
+            </h3>
+
+            <div class="issue">
+                <div class="issue-dot"></div>
+                Use more characters rather than relying only on symbols.
+            </div>
+
+            <div class="issue">
+                <div class="issue-dot"></div>
+                Avoid common words, dates, and keyboard patterns.
+            </div>
+
+            <div class="issue">
+                <div class="issue-dot"></div>
+                Unique passwords are safer than reusing one password.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <div class="privacy">
+
+        <div class="privacy-icon">
+            ◈
+        </div>
+
+        <div>
+            <strong>Your password stays here.</strong><br>
+            Analysis happens entirely inside your browser.
+            The password is never uploaded to a server,
+            API, database, or third-party service.
+        </div>
+
+    </div>
+
+</main>
+
+
+<footer>
+    Password Bloom · Private password analysis
+</footer>
 
 </div>
 
 
 <script>
 
-
 /* =========================
    COMMON PASSWORDS
 ========================= */
 
 const commonPasswords = new Set([
-
-"password",
-"password1",
-"password123",
-"123456",
-"1234567",
-"12345678",
-"123456789",
-"1234567890",
-"qwerty",
-"qwerty123",
-"abc123",
-"111111",
-"000000",
-"letmein",
-"welcome",
-"admin",
-"admin123",
-"login",
-"monkey",
-"dragon",
-"football",
-"baseball",
-"master",
-"shadow",
-"superman",
-"princess",
-"iloveyou",
-"sunshine",
-"whatever",
-"trustno1",
-"starwars",
-"pokemon",
-"computer",
-"freedom",
-"hello",
-"secret",
-"passw0rd"
-
+    "password",
+    "password1",
+    "password123",
+    "123456",
+    "1234567",
+    "12345678",
+    "123456789",
+    "1234567890",
+    "qwerty",
+    "qwerty123",
+    "abc123",
+    "111111",
+    "000000",
+    "letmein",
+    "welcome",
+    "admin",
+    "admin123",
+    "login",
+    "monkey",
+    "dragon",
+    "football",
+    "baseball",
+    "master",
+    "shadow",
+    "superman",
+    "princess",
+    "iloveyou",
+    "sunshine",
+    "whatever",
+    "trustno1",
+    "starwars",
+    "pokemon",
+    "computer",
+    "freedom",
+    "hello",
+    "secret",
+    "passw0rd"
 ]);
 
 
@@ -726,93 +867,87 @@ const commonPasswords = new Set([
 const passwordInput =
     document.getElementById("password");
 
-const toggleButton =
+const toggle =
     document.getElementById("toggle");
+
+const orb =
+    document.getElementById("orb");
+
+const orbScore =
+    document.getElementById("orbScore");
+
+const progressFill =
+    document.getElementById("progressFill");
+
+const strengthText =
+    document.getElementById("strengthText");
+
+const strengthDescription =
+    document.getElementById("strengthDescription");
+
+const issues =
+    document.getElementById("issues");
 
 
 /* =========================
    SHOW / HIDE
 ========================= */
 
-toggleButton.addEventListener(
-    "click",
-    () => {
+toggle.addEventListener("click", () => {
 
-        if (
-            passwordInput.type === "password"
-        ) {
+    if (passwordInput.type === "password") {
 
-            passwordInput.type = "text";
+        passwordInput.type = "text";
+        toggle.textContent = "Hide";
 
-            toggleButton.textContent =
-                "Hide";
+    } else {
 
-        } else {
-
-            passwordInput.type =
-                "password";
-
-            toggleButton.textContent =
-                "Show";
-
-        }
+        passwordInput.type = "password";
+        toggle.textContent = "Show";
 
     }
-);
+
+});
 
 
 /* =========================
    INFO BUTTONS
 ========================= */
 
-document.querySelectorAll(".infoButton")
+document.querySelectorAll(".info-btn")
 .forEach(button => {
 
-    button.addEventListener(
-        "click",
-        event => {
+    button.addEventListener("click", event => {
 
-            event.stopPropagation();
+        event.stopPropagation();
 
-            document
-                .querySelectorAll(".tooltip")
-                .forEach(
-                    tooltip =>
-                        tooltip.remove()
-                );
+        document
+            .querySelectorAll(".tooltip")
+            .forEach(t => t.remove());
 
-            const tooltip =
-                document.createElement("div");
+        const tooltip =
+            document.createElement("div");
 
-            tooltip.className =
-                "tooltip";
+        tooltip.className = "tooltip";
+        tooltip.textContent =
+            button.dataset.info;
 
-            tooltip.textContent =
-                button.dataset.info;
+        button.parentElement.appendChild(
+            tooltip
+        );
 
-            button.parentElement.appendChild(
-                tooltip
-            );
-
-        }
-    );
+    });
 
 });
 
 
-document.addEventListener(
-    "click",
-    () => {
+document.addEventListener("click", () => {
 
-        document
-            .querySelectorAll(".tooltip")
-            .forEach(
-                tooltip =>
-                    tooltip.remove()
-            );
+    document
+        .querySelectorAll(".tooltip")
+        .forEach(t => t.remove());
 
-    }
-);
+});
 
 
 /* =========================
@@ -836,7 +971,6 @@ function getCharacterPool(password) {
         pool += 33;
 
     return pool;
-
 }
 
 
@@ -849,23 +983,21 @@ function calculateEntropy(password) {
     const pool =
         getCharacterPool(password);
 
-    if (pool === 0)
+    if (!pool)
         return 0;
 
     return password.length *
         Math.log2(pool);
-
 }
 
 
 /* =========================
-   PATTERN DETECTION
+   PATTERNS
 ========================= */
 
 function hasRepeatedCharacters(password) {
 
     return /(.)\1{2,}/.test(password);
-
 }
 
 
@@ -889,33 +1021,26 @@ function hasSequence(password) {
         const c =
             lower.charCodeAt(i + 2);
 
-
         if (
             b === a + 1 &&
             c === b + 1
-        ) {
+        )
             return true;
-        }
-
 
         if (
             b === a - 1 &&
             c === b - 1
-        ) {
+        )
             return true;
-        }
-
     }
 
     return false;
-
 }
 
 
 function hasKeyboardPattern(password) {
 
     const patterns = [
-
         "qwerty",
         "asdfgh",
         "zxcvbn",
@@ -923,7 +1048,6 @@ function hasKeyboardPattern(password) {
         "asdfghjkl",
         "123456",
         "654321"
-
     ];
 
     const lower =
@@ -933,14 +1057,12 @@ function hasKeyboardPattern(password) {
         pattern =>
             lower.includes(pattern)
     );
-
 }
 
 
 function containsYear(password) {
 
     return /(19|20)\d{2}/.test(password);
-
 }
 
 
@@ -949,30 +1071,19 @@ function containsCommonPassword(password) {
     const lower =
         password.toLowerCase();
 
-    if (
-        commonPasswords.has(lower)
-    ) {
+    if (commonPasswords.has(lower))
         return true;
-    }
 
-
-    for (
-        const word of commonPasswords
-    ) {
+    for (const word of commonPasswords) {
 
         if (
             word.length >= 5 &&
             lower.includes(word)
-        ) {
-
+        )
             return true;
-
-        }
-
     }
 
     return false;
-
 }
 
 
@@ -984,37 +1095,28 @@ function commonWordPlusNumbers(password) {
     return commonPasswords.has(
         lower.replace(/[0-9]+$/, "")
     );
-
 }
 
 
 /* =========================
-   FORMAT NUMBERS
+   NUMBER FORMATTING
 ========================= */
 
 function formatNumber(number) {
 
     if (number < 1000)
-        return Math.round(number)
-            .toString();
+        return Math.round(number);
 
-    if (number < 1000000)
-        return Math.round(
-            number / 1000
-        ) + "K";
+    if (number < 1e6)
+        return Math.round(number / 1e3) + "K";
 
-    if (number < 1000000000)
-        return Math.round(
-            number / 1000000
-        ) + "M";
+    if (number < 1e9)
+        return Math.round(number / 1e6) + "M";
 
     if (number < 1e12)
-        return Math.round(
-            number / 1e9
-        ) + "B";
+        return Math.round(number / 1e9) + "B";
 
     return number.toExponential(2);
-
 }
 
 
@@ -1024,113 +1126,105 @@ function formatNumber(number) {
 
 function calculateCrackTime(guesses) {
 
-    const guessesPerSecond =
-        1e10;
+    const guessesPerSecond = 1e10;
 
     const seconds =
         guesses / guessesPerSecond;
 
-
     if (seconds < 1)
         return "Less than a second";
 
-
     if (seconds < 60)
-        return Math.round(seconds)
-            + " seconds";
-
+        return Math.round(seconds) + " sec";
 
     if (seconds < 3600)
-        return Math.round(
-            seconds / 60
-        ) + " minutes";
-
+        return Math.round(seconds / 60) + " min";
 
     if (seconds < 86400)
-        return Math.round(
-            seconds / 3600
-        ) + " hours";
-
+        return Math.round(seconds / 3600) + " hrs";
 
     if (seconds < 31557600)
-        return Math.round(
-            seconds / 86400
-        ) + " days";
-
+        return Math.round(seconds / 86400) + " days";
 
     const years =
         seconds / 31557600;
 
-
     if (years < 1000)
-        return Math.round(years)
-            + " years";
-
+        return Math.round(years) + " years";
 
     if (years < 1e6)
-        return Math.round(
-            years / 1000
-        ) + " thousand years";
-
+        return Math.round(years / 1000) + "K years";
 
     if (years < 1e9)
-        return Math.round(
-            years / 1e6
-        ) + " million years";
-
+        return Math.round(years / 1e6) + "M years";
 
     return "Extremely long";
-
 }
 
 
 /* =========================
-   PASSWORD ANALYSIS
+   UPDATE ORB
 ========================= */
 
-function analyzePassword() {
+function updateOrb(percent, score) {
+
+    const degrees =
+        Math.round(percent * 3.6);
+
+    orb.style.background =
+        `conic-gradient(
+            #73d5ad ${degrees}deg,
+            rgba(255,255,255,.05) ${degrees}deg
+        )`;
+
+    orbScore.textContent =
+        score + "%";
+
+    progressFill.style.width =
+        score + "%";
+}
+
+
+/* =========================
+   MAIN ANALYSIS
+========================= */
+
+function analyze() {
 
     const password =
         passwordInput.value;
 
-    const analysis =
-        document.getElementById(
-            "analysis"
-        );
+    if (!password) {
 
+        document.getElementById("entropy")
+            .textContent = "—";
 
-    if (password.length === 0) {
+        document.getElementById("guesses")
+            .textContent = "—";
 
-        document.getElementById(
-            "entropy"
-        ).textContent = "-";
+        document.getElementById("crackTime")
+            .textContent = "—";
 
-        document.getElementById(
-            "guesses"
-        ).textContent = "-";
+        document.getElementById("length")
+            .textContent = "0";
 
-        document.getElementById(
-            "crackTime"
-        ).textContent = "-";
+        strengthText.textContent =
+            "Waiting for a password";
 
-        document.getElementById(
-            "length"
-        ).textContent = "0";
+        strengthDescription.textContent =
+            "Enter a password above and the analyzer will look for predictable patterns.";
 
-        document.getElementById(
-            "strengthText"
-        ).textContent =
-            "Enter a password";
+        orbScore.textContent = "—";
 
-        document.getElementById(
-            "barFill"
-        ).style.width = "0%";
+        orb.style.background =
+            "conic-gradient(#73d5ad 0deg, rgba(255,255,255,.05) 0deg)";
 
-        analysis.innerHTML =
-            "Enter a password to begin the analysis.";
+        progressFill.style.width = "0%";
+
+        issues.innerHTML =
+            '<div class="good">Enter a password to begin analysis.</div>';
 
         return;
-
     }
 
 
@@ -1140,206 +1234,192 @@ function analyzePassword() {
     let effectiveEntropy =
         entropy;
 
-    const issues = [];
+    const foundIssues = [];
 
 
-    if (
-        containsCommonPassword(password)
-    ) {
+    if (containsCommonPassword(password)) {
 
         effectiveEntropy -= 25;
 
-        issues.push(
-            "This password contains a commonly used password or word."
+        foundIssues.push(
+            "Contains a common password or commonly used word."
         );
-
     }
 
 
-    if (
-        commonWordPlusNumbers(password)
-    ) {
+    if (commonWordPlusNumbers(password)) {
 
         effectiveEntropy -= 10;
 
-        issues.push(
-            "Adding numbers to a common word is a common cracking pattern."
+        foundIssues.push(
+            "Uses the predictable pattern of a common word followed by numbers."
         );
-
     }
 
 
-    if (
-        hasRepeatedCharacters(password)
-    ) {
+    if (hasRepeatedCharacters(password)) {
 
         effectiveEntropy -= 8;
 
-        issues.push(
-            "Repeated characters make the password easier to predict."
+        foundIssues.push(
+            "Contains repeated characters that reduce unpredictability."
         );
-
     }
 
 
-    if (
-        hasSequence(password)
-    ) {
+    if (hasSequence(password)) {
 
         effectiveEntropy -= 8;
 
-        issues.push(
-            "The password contains an obvious sequence."
+        foundIssues.push(
+            "Contains a simple alphabetical or numerical sequence."
         );
-
     }
 
 
-    if (
-        hasKeyboardPattern(password)
-    ) {
+    if (hasKeyboardPattern(password)) {
 
         effectiveEntropy -= 12;
 
-        issues.push(
-            "The password contains a predictable keyboard pattern."
+        foundIssues.push(
+            "Contains a predictable keyboard pattern."
         );
-
     }
 
 
-    if (
-        containsYear(password)
-    ) {
+    if (containsYear(password)) {
 
         effectiveEntropy -= 5;
 
-        issues.push(
-            "Years are commonly included in passwords and are easier for attackers to test."
+        foundIssues.push(
+            "Contains a year, which is commonly tested by attackers."
         );
-
     }
 
 
     effectiveEntropy =
-        Math.max(
-            0,
-            effectiveEntropy
-        );
+        Math.max(0, effectiveEntropy);
 
 
     const guesses =
-        Math.pow(
-            2,
-            effectiveEntropy
-        );
+        Math.pow(2, effectiveEntropy);
 
 
-    document.getElementById(
-        "entropy"
-    ).textContent =
-        Math.round(
-            effectiveEntropy
-        ) + " bits";
+    let percent;
+
+    if (effectiveEntropy < 25)
+        percent = 15;
+    else if (effectiveEntropy < 40)
+        percent = 30;
+    else if (effectiveEntropy < 60)
+        percent = 55;
+    else if (effectiveEntropy < 80)
+        percent = 78;
+    else
+        percent = 96;
 
 
-    document.getElementById(
-        "guesses"
-    ).textContent =
+    let label;
+    let description;
+
+
+    if (effectiveEntropy < 25) {
+
+        label = "Very weak";
+
+        description =
+            "This password has several characteristics that make it relatively predictable.";
+
+    } else if (effectiveEntropy < 40) {
+
+        label = "Weak";
+
+        description =
+            "There is some variety, but an attacker may still have useful patterns to exploit.";
+
+    } else if (effectiveEntropy < 60) {
+
+        label = "Moderate";
+
+        description =
+            "This password has reasonable complexity, but there is still room for improvement.";
+
+    } else if (effectiveEntropy < 80) {
+
+        label = "Strong";
+
+        description =
+            "This password has good resistance to common guessing strategies.";
+
+    } else {
+
+        label = "Very strong";
+
+        description =
+            "No obvious patterns were detected and the estimated search space is large.";
+
+    }
+
+
+    document.getElementById("entropy")
+        .textContent =
+        Math.round(effectiveEntropy) + " bits";
+
+
+    document.getElementById("guesses")
+        .textContent =
         formatNumber(guesses);
 
 
-    document.getElementById(
-        "crackTime"
-    ).textContent =
+    document.getElementById("crackTime")
+        .textContent =
         calculateCrackTime(guesses);
 
 
-    document.getElementById(
-        "length"
-    ).textContent =
+    document.getElementById("length")
+        .textContent =
         password.length;
 
 
-    let strength;
-    let percentage;
+    strengthText.textContent =
+        label;
+
+    strengthDescription.textContent =
+        description;
 
 
-    if (
-        effectiveEntropy < 25
-    ) {
+    updateOrb(
+        percent,
+        percent
+    );
 
-        strength = "Very Weak";
-        percentage = 15;
 
-    } else if (
-        effectiveEntropy < 40
-    ) {
+    if (!foundIssues.length) {
 
-        strength = "Weak";
-        percentage = 30;
-
-    } else if (
-        effectiveEntropy < 60
-    ) {
-
-        strength = "Moderate";
-        percentage = 50;
-
-    } else if (
-        effectiveEntropy < 80
-    ) {
-
-        strength = "Strong";
-        percentage = 75;
+        issues.innerHTML =
+            '<div class="good">✓ No obvious predictable patterns were detected.</div>';
 
     } else {
 
-        strength = "Very Strong";
-        percentage = 100;
+        issues.innerHTML =
+            foundIssues.map(issue => `
+                <div class="issue">
+                    <div class="issue-dot"></div>
+                    <div>${issue}</div>
+                </div>
+            `).join("");
 
     }
-
-
-    document.getElementById(
-        "strengthText"
-    ).textContent =
-        strength;
-
-
-    document.getElementById(
-        "barFill"
-    ).style.width =
-        percentage + "%";
-
-
-    if (issues.length === 0) {
-
-        analysis.innerHTML =
-            '<div class="good">✓ No obvious password patterns detected.</div>';
-
-    } else {
-
-        analysis.innerHTML =
-            issues
-                .map(
-                    issue =>
-                        `<div class="issue">• ${issue}</div>`
-                )
-                .join("");
-
-    }
-
 }
 
 
 passwordInput.addEventListener(
     "input",
-    analyzePassword
+    analyze
 );
 
 </script>
 
 </body>
 </html>
-
+```
