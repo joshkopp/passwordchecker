@@ -1,1425 +1,1100 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Password Bloom</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JK Security — Password Strength</title>
 
-<style>
-* {
-    box-sizing: border-box;
-}
+  <style>
+    :root {
+      --bg: #07111a;
+      --panel: rgba(17, 31, 42, 0.78);
+      --panel-light: rgba(255, 255, 255, 0.045);
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #edf7f4;
+      --muted: #8da19f;
+      --green: #73d5ad;
+      --green-soft: #b4f1d6;
+      --blue: #77b9e8;
+      --danger: #f28d8d;
+      --shadow: rgba(0, 0, 0, 0.25);
+    }
 
-:root {
-    --bg: #07111a;
-    --panel: rgba(17, 31, 42, 0.72);
-    --panel-light: rgba(255,255,255,0.055);
-    --border: rgba(255,255,255,0.09);
-    --text: #edf7f4;
-    --muted: #8da19f;
-    --green: #73d5ad;
-    --green-soft: #b4f1d6;
-    --blue: #77b9e8;
-    --danger: #f28d8d;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-html {
-    scroll-behavior: smooth;
-}
+    html {
+      scroll-behavior: smooth;
+    }
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: var(--text);
-    background:
-        radial-gradient(circle at 10% 10%, rgba(83, 182, 144, .15), transparent 30%),
-        radial-gradient(circle at 90% 15%, rgba(76, 137, 204, .13), transparent 28%),
-        radial-gradient(circle at 80% 90%, rgba(140, 101, 196, .12), transparent 30%),
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(115, 213, 173, 0.08), transparent 30%),
+        radial-gradient(circle at 85% 20%, rgba(119, 185, 232, 0.07), transparent 28%),
         var(--bg);
-    overflow-x: hidden;
-}
-
-/* Ambient background */
-
-.ambient {
-    position: fixed;
-    width: 420px;
-    height: 420px;
-    border-radius: 50%;
-    filter: blur(110px);
-    opacity: .18;
-    pointer-events: none;
-    z-index: -1;
-    animation: float 10s ease-in-out infinite alternate;
-}
-
-.ambient.one {
-    background: #56c596;
-    left: -180px;
-    top: 10%;
-}
-
-.ambient.two {
-    background: #5d91d4;
-    right: -180px;
-    bottom: 5%;
-    animation-delay: -4s;
-}
-
-@keyframes float {
-    from {
-        transform: translateY(-20px);
+      overflow-x: hidden;
     }
-    to {
-        transform: translateY(25px);
+
+    /* Lightweight ambient background */
+    .ambient {
+      position: fixed;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: -1;
+      will-change: transform;
     }
-}
 
-/* Page */
+    .ambient.one {
+      background: #73d5ad;
+      top: -170px;
+      left: -120px;
+    }
 
-.wrapper {
-    width: min(1100px, calc(100% - 32px));
-    margin: 0 auto;
-    padding: 45px 0 70px;
-}
+    .ambient.two {
+      background: #77b9e8;
+      right: -160px;
+      bottom: -180px;
+    }
 
-/* Header */
+    .page {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 26px 0 60px;
+    }
 
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 45px;
-}
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 70px;
+    }
 
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
 
-.brand-mark {
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, #75d9af, #4f9fc4);
-    color: #07111a;
-    font-weight: 900;
-    box-shadow: 0 8px 30px rgba(93, 206, 164, .2);
-}
+    .brand-symbol {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--green-soft);
+      background: rgba(115, 213, 173, 0.09);
+      border: 1px solid rgba(115, 213, 173, 0.18);
+      font-size: 17px;
+    }
 
-.brand-name {
-    font-weight: 700;
-    letter-spacing: -.3px;
-}
+    .privacy-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      color: var(--green-soft);
+      background: rgba(115, 213, 173, 0.07);
+      border: 1px solid rgba(115, 213, 173, 0.16);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
 
-.private-pill {
-    padding: 8px 13px;
-    border: 1px solid rgba(115, 213, 173, .18);
-    background: rgba(115, 213, 173, .06);
-    color: var(--green-soft);
-    border-radius: 999px;
-    font-size: 12px;
-}
+    .privacy-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(115, 213, 173, 0.55);
+    }
 
-/* Hero */
+    /* Hero */
+    .hero {
+      max-width: 760px;
+      margin-bottom: 34px;
+    }
 
-.hero {
-    text-align: center;
-    margin-bottom: 35px;
-}
+    .eyebrow {
+      margin-bottom: 13px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
 
-.eyebrow {
-    color: var(--green);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 700;
-    margin-bottom: 13px;
-}
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 7vw, 72px);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      font-weight: 750;
+    }
 
-.hero h1 {
-    font-size: clamp(38px, 6vw, 64px);
-    line-height: .98;
-    letter-spacing: -3px;
-    margin: 0;
-}
+    h1 span {
+      color: var(--green);
+    }
 
-.hero h1 span {
-    color: var(--green);
-}
+    .hero p {
+      max-width: 650px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
 
-.hero p {
-    max-width: 580px;
-    margin: 18px auto 0;
-    color: var(--muted);
-    line-height: 1.7;
-    font-size: 15px;
-}
+    /* Main panel */
+    .main-card {
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      background: var(--panel);
+      box-shadow: 0 24px 70px var(--shadow);
+      backdrop-filter: blur(14px);
+    }
 
-/* Main panel */
+    .input-wrapper {
+      position: relative;
+    }
 
-.main-card {
-    border: 1px solid var(--border);
-    background: var(--panel);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border-radius: 30px;
-    padding: clamp(22px, 5vw, 45px);
-    box-shadow:
-        0 30px 100px rgba(0,0,0,.25),
-        inset 0 1px 0 rgba(255,255,255,.04);
-}
+    .password-input {
+      width: 100%;
+      height: 66px;
+      padding: 0 58px 0 20px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      outline: none;
+      background: rgba(0, 0, 0, 0.17);
+      color: var(--text);
+      font-size: 18px;
+      letter-spacing: 0.02em;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
 
-/* Input */
+    .password-input::placeholder {
+      color: #627774;
+    }
 
-.input-label {
-    display: block;
-    color: #b8c8c6;
-    font-size: 13px;
-    margin-bottom: 10px;
-}
+    .password-input:focus {
+      border-color: rgba(115, 213, 173, 0.45);
+      box-shadow: 0 0 0 4px rgba(115, 213, 173, 0.06);
+    }
 
-.input-wrap {
-    display: flex;
-    gap: 10px;
-}
+    .toggle {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 17px;
+    }
 
-.input-wrap input {
-    min-width: 0;
-    flex: 1;
-    height: 58px;
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    background: rgba(0,0,0,.2);
-    color: white;
-    padding: 0 18px;
-    outline: none;
-    font-size: 16px;
-    transition: .25s;
-}
+    .toggle:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+    }
 
-.input-wrap input:focus {
-    border-color: rgba(115,213,173,.55);
-    box-shadow: 0 0 0 4px rgba(115,213,173,.07);
-}
-
-.input-wrap input::placeholder {
-    color: #60716f;
-}
-
-.show-btn {
-    height: 58px;
-    border-radius: 16px;
-    padding: 0 20px;
-    background: rgba(255,255,255,.07);
-    border: 1px solid var(--border);
-    color: #d6e3e0;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.show-btn:hover {
-    background: rgba(255,255,255,.11);
-}
-
-/* Strength */
-
-.strength-area {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 35px;
-    align-items: center;
-    margin-top: 40px;
-}
-
-/* Orb */
-
-.orb-wrap {
-    display: grid;
-    place-items: center;
-}
-
-.orb {
-    width: 155px;
-    height: 155px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    position: relative;
-    background: conic-gradient(
-        var(--green) 0deg,
-        rgba(255,255,255,.04) 0deg
-    );
-    transition: background .5s ease;
-    box-shadow:
-        0 0 60px rgba(115,213,173,.08);
-}
-
-.orb::before {
-    content: "";
-    position: absolute;
-    inset: 8px;
-    border-radius: 50%;
-    background: #0c1821;
-    border: 1px solid rgba(255,255,255,.05);
-}
-
-.orb-content {
-    position: relative;
-    text-align: center;
-}
-
-.orb-score {
-    font-size: 28px;
-    font-weight: 750;
-}
-
-.orb-label {
-    color: var(--muted);
-    font-size: 11px;
-    margin-top: 3px;
-}
-
-/* Strength details */
-
-.strength-details h2 {
-    margin: 0;
-    font-size: 25px;
-}
-
-.strength-details p {
-    color: var(--muted);
-    line-height: 1.6;
-    font-size: 14px;
-    margin: 9px 0 18px;
-}
-
-.progress {
-    height: 7px;
-    border-radius: 20px;
-    background: rgba(255,255,255,.06);
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    width: 0;
-    border-radius: inherit;
-    background: linear-gradient(90deg, #62cba0, #8bd8b9);
-    transition: width .5s ease;
-}
-
-/* Metrics */
-
-.metrics {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-top: 35px;
-}
-
-.metric {
-    min-height: 105px;
-    padding: 17px;
-    border-radius: 17px;
-    background: var(--panel-light);
-    border: 1px solid var(--border);
-}
-
-.metric-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.metric-name {
-    color: var(--muted);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: .7px;
-}
-
-.metric-value {
-    margin-top: 13px;
-    font-size: 20px;
-    font-weight: 700;
-}
-
-/* Info */
-
-.info {
-    position: relative;
-}
-
-.info-btn {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,.13);
-    background: rgba(255,255,255,.06);
-    color: #aebfbc;
-    cursor: pointer;
-    padding: 0;
-    font-size: 10px;
-}
-
-.tooltip {
-    position: absolute;
-    z-index: 50;
-    width: 240px;
-    right: 0;
-    top: 28px;
-    padding: 13px;
-    border-radius: 12px;
-    background: #12212b;
-    border: 1px solid var(--border);
-    color: #b9c8c6;
-    font-size: 12px;
-    line-height: 1.5;
-    box-shadow: 0 15px 40px rgba(0,0,0,.3);
-}
-
-/* Analysis */
-
-.analysis {
-    margin-top: 35px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.analysis-card {
-    padding: 20px;
-    border-radius: 18px;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,.025);
-}
-
-.analysis-card h3 {
-    margin: 0 0 15px;
-    font-size: 14px;
-}
-
-.issue {
-    display: flex;
-    gap: 10px;
-    padding: 10px 0;
-    color: #c7d3d1;
-    font-size: 13px;
-    line-height: 1.5;
-    border-bottom: 1px solid rgba(255,255,255,.05);
-}
-
-.issue:last-child {
-    border-bottom: 0;
-}
-
-.issue-dot {
-    width: 7px;
-    height: 7px;
-    min-width: 7px;
-    margin-top: 6px;
-    border-radius: 50%;
-    background: var(--danger);
-}
-
-.good {
-    color: var(--green-soft);
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-/* Privacy */
-
-.privacy {
-    margin-top: 20px;
-    padding: 18px;
-    border-radius: 17px;
-    border: 1px solid rgba(115,213,173,.1);
-    background: rgba(115,213,173,.035);
-    display: flex;
-    gap: 12px;
-    color: #9fb3ae;
-    font-size: 12px;
-    line-height: 1.6;
-}
-
-.privacy-icon {
-    color: var(--green);
-}
-
-/* Footer */
-
-footer {
-    text-align: center;
-    color: #536461;
-    font-size: 11px;
-    margin-top: 25px;
-}
-
-/* Responsive */
-
-@media (max-width: 800px) {
+    /* Strength */
     .strength-area {
+      display: grid;
+      grid-template-columns: 155px 1fr;
+      gap: 30px;
+      align-items: center;
+      padding: 34px 10px 30px;
+    }
+
+    .orb {
+      width: 140px;
+      height: 140px;
+      margin: auto;
+      display: grid;
+      place-items: center;
+      position: relative;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at center, rgba(115, 213, 173, 0.08) 0 53%, transparent 54%),
+        conic-gradient(var(--green) 0deg, rgba(255,255,255,0.06) 0deg);
+      transition: background 0.25s ease;
+    }
+
+    .orb::before {
+      content: "";
+      position: absolute;
+      inset: 9px;
+      border-radius: 50%;
+      background: #0b1820;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .orb-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .orb-score {
+      font-size: 32px;
+      font-weight: 750;
+      letter-spacing: -0.04em;
+    }
+
+    .orb-label {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .strength-info h2 {
+      margin: 0 0 7px;
+      font-size: 26px;
+      letter-spacing: -0.03em;
+    }
+
+    .strength-info p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+      max-width: 600px;
+    }
+
+    .progress {
+      height: 7px;
+      margin-top: 19px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #5cb995, #9be7c5);
+      transition: width 0.3s ease;
+    }
+
+    /* Metrics */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      position: relative;
+      padding: 18px;
+      min-height: 105px;
+      border-radius: 17px;
+      background: var(--panel-light);
+      border: 1px solid rgba(255,255,255,0.055);
+    }
+
+    .metric-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .info-btn {
+      width: 17px;
+      height: 17px;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 50%;
+      background: transparent;
+      color: #91aaa5;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .metric-value {
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .tooltip {
+      position: absolute;
+      z-index: 10;
+      left: 15px;
+      right: 15px;
+      bottom: calc(100% + 9px);
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #101e27;
+      color: #c8d7d4;
+      font-size: 11px;
+      line-height: 1.5;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    /* Analysis */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .analysis-card {
+      min-height: 150px;
+      padding: 21px;
+      border: 1px solid rgba(255,255,255,0.055);
+      border-radius: 17px;
+      background: var(--panel-light);
+    }
+
+    .analysis-title {
+      margin-bottom: 13px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .analysis-content {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .issue {
+      display: flex;
+      gap: 8px;
+      margin: 5px 0;
+    }
+
+    .issue-dot {
+      flex: 0 0 auto;
+      width: 6px;
+      height: 6px;
+      margin-top: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    /* Privacy */
+    .privacy-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 14px;
+      padding: 17px 19px;
+      border-radius: 16px;
+      border: 1px solid rgba(115,213,173,0.11);
+      background: rgba(115,213,173,0.035);
+    }
+
+    .privacy-icon {
+      color: var(--green);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .privacy-note strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .privacy-note span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      color: #526663;
+      font-size: 11px;
+    }
+
+    /* Mobile */
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 20px, 600px);
+        padding-top: 18px;
+      }
+
+      header {
+        margin-bottom: 48px;
+      }
+
+      .privacy-pill {
+        max-width: 220px;
+        white-space: normal;
+        line-height: 1.3;
+      }
+
+      .main-card {
+        padding: 16px;
+        border-radius: 21px;
+      }
+
+      .strength-area {
         grid-template-columns: 1fr;
         text-align: center;
-    }
+        gap: 22px;
+      }
 
-    .orb-wrap {
-        margin-bottom: 5px;
-    }
+      .strength-info p {
+        margin-left: auto;
+        margin-right: auto;
+      }
 
-    .metrics {
+      .metrics {
         grid-template-columns: repeat(2, 1fr);
-    }
+      }
 
-    .analysis {
+      .analysis-grid {
         grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 520px) {
-    .wrapper {
-        width: min(100% - 20px, 1100px);
-        padding-top: 25px;
+      }
     }
 
-    header {
-        margin-bottom: 30px;
+    @media (max-width: 470px) {
+      .brand {
+        font-size: 14px;
+      }
+
+      .privacy-pill {
+        font-size: 10px;
+        padding: 7px 9px;
+      }
+
+      h1 {
+        font-size: 43px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .metrics {
+        gap: 7px;
+      }
+
+      .metric {
+        padding: 14px;
+      }
     }
 
-    .private-pill {
-        display: none;
+    /* Respect reduced-motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
     }
-
-    .hero h1 {
-        letter-spacing: -2px;
-    }
-
-    .input-wrap {
-        flex-direction: column;
-    }
-
-    .show-btn {
-        width: 100%;
-    }
-
-    .metrics {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .main-card {
-        border-radius: 23px;
-    }
-}
-</style>
+  </style>
 </head>
 
 <body>
 
-<div class="ambient one"></div>
-<div class="ambient two"></div>
+  <div class="ambient one"></div>
+  <div class="ambient two"></div>
 
-<div class="wrapper">
+  <div class="page">
 
-<header>
-    <div class="brand">
-        <div class="brand-mark">✦</div>
-        <div class="brand-name">Password Bloom</div>
-    </div>
+    <header>
+      <div class="brand">
+        <div class="brand-symbol">✦</div>
+        <span>JK Security</span>
+      </div>
 
-    <div class="private-pill">
-        ● 100% client-side
-    </div>
-</header>
+      <div class="privacy-pill">
+        <span class="privacy-dot"></span>
+        100% client-side · no data leaves your browser
+      </div>
+    </header>
 
+    <section class="hero">
+      <div class="eyebrow">Password Intelligence</div>
 
-<section class="hero">
+      <h1>
+        Know how strong<br>
+        your <span>password</span> really is.
+      </h1>
 
-    <div class="eyebrow">Password Intelligence</div>
+      <p>
+        Analyze password strength using entropy, common-password detection,
+        pattern analysis, and estimated guessing resistance — entirely inside
+        your browser.
+      </p>
+    </section>
 
-    <h1>
-        Grow a stronger<br>
-        <span>digital lock.</span>
-    </h1>
+    <main class="main-card">
 
-    <p>
-        Understand how predictable your password is
-        using entropy estimates, pattern detection,
-        and common-password analysis.
-    </p>
-
-</section>
-
-
-<main class="main-card">
-
-    <label class="input-label">
-        Password to analyze
-    </label>
-
-    <div class="input-wrap">
-
+      <div class="input-wrapper">
         <input
-            id="password"
-            type="password"
-            autocomplete="off"
-            placeholder="Type a password..."
-        >
+          id="password"
+          class="password-input"
+          type="password"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Enter a password to analyze..."
+        />
 
-        <button class="show-btn" id="toggle">
-            Show
+        <button class="toggle" id="toggle" type="button" aria-label="Show password">
+          ◉
         </button>
+      </div>
 
-    </div>
+      <section class="strength-area">
 
-
-    <section class="strength-area">
-
-        <div class="orb-wrap">
-
-            <div class="orb" id="orb">
-
-                <div class="orb-content">
-
-                    <div class="orb-score" id="orbScore">
-                        —
-                    </div>
-
-                    <div class="orb-label">
-                        SECURITY
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="orb" id="orb">
+          <div class="orb-content">
+            <div class="orb-score" id="orbScore">0%</div>
+            <div class="orb-label">strength</div>
+          </div>
         </div>
 
+        <div class="strength-info">
+          <h2 id="strengthText">Waiting for a password</h2>
 
-        <div class="strength-details">
+          <p id="strengthDescription">
+            Enter a password above and the analysis will happen locally.
+          </p>
 
-            <h2 id="strengthText">
-                Waiting for a password
-            </h2>
-
-            <p id="strengthDescription">
-                Enter a password above and the analyzer
-                will look for predictable patterns.
-            </p>
-
-            <div class="progress">
-
-                <div
-                    class="progress-fill"
-                    id="progressFill">
-                </div>
-
-            </div>
-
+          <div class="progress">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
         </div>
 
-    </section>
+      </section>
 
-
-    <section class="metrics">
-
+      <section class="metrics">
 
         <div class="metric">
-
-            <div class="metric-top">
-
-                <div class="metric-name">
-                    Entropy
-                </div>
-
-                <div class="info">
-
-                    <button
-                        class="info-btn"
-                        data-info="Entropy is an estimate of how unpredictable a password is. Higher entropy generally means more possible combinations."
-                    >?</button>
-
-                </div>
-
-            </div>
-
-            <div
-                class="metric-value"
-                id="entropy">
-                —
-            </div>
-
+          <div class="metric-top">
+            Entropy
+            <button class="info-btn" data-info="Estimated uncertainty in the password, measured in bits. Higher values generally mean more possible combinations.">?</button>
+          </div>
+          <div class="metric-value" id="entropy">—</div>
         </div>
-
 
         <div class="metric">
-
-            <div class="metric-top">
-
-                <div class="metric-name">
-                    Guesses
-                </div>
-
-                <div class="info">
-
-                    <button
-                        class="info-btn"
-                        data-info="An approximate number of guesses in a simplified brute-force model. Real attacks can use much smarter techniques."
-                    >?</button>
-
-                </div>
-
-            </div>
-
-            <div
-                class="metric-value"
-                id="guesses">
-                —
-            </div>
-
+          <div class="metric-top">
+            Guesses
+            <button class="info-btn" data-info="A rough estimate of how many guesses an attacker might need in an offline guessing scenario.">?</button>
+          </div>
+          <div class="metric-value" id="guesses">—</div>
         </div>
-
 
         <div class="metric">
-
-            <div class="metric-top">
-
-                <div class="metric-name">
-                    Crack time
-                </div>
-
-                <div class="info">
-
-                    <button
-                        class="info-btn"
-                        data-info="An estimate based on a hypothetical offline attacker making 10 billion guesses per second. Real results depend heavily on the hashing system and hardware."
-                    >?</button>
-
-                </div>
-
-            </div>
-
-            <div
-                class="metric-value"
-                id="crackTime">
-                —
-            </div>
-
+          <div class="metric-top">
+            Crack time
+            <button class="info-btn" data-info="A hypothetical estimate assuming 10 billion guesses per second. Real attackers can be much slower or faster depending on the attack and hardware.">?</button>
+          </div>
+          <div class="metric-value" id="crackTime">—</div>
         </div>
-
 
         <div class="metric">
-
-            <div class="metric-top">
-
-                <div class="metric-name">
-                    Length
-                </div>
-
-                <div class="info">
-
-                    <button
-                        class="info-btn"
-                        data-info="The total number of characters in the password. Length is one of the most important factors in resisting brute-force guessing."
-                    >?</button>
-
-                </div>
-
-            </div>
-
-            <div
-                class="metric-value"
-                id="length">
-                0
-            </div>
-
+          <div class="metric-top">
+            Length
+            <button class="info-btn" data-info="The number of characters in your password. Length is one of the most important factors in password strength.">?</button>
+          </div>
+          <div class="metric-value" id="length">0 chars</div>
         </div>
 
+      </section>
 
-    </section>
-
-
-    <section class="analysis">
+      <section class="analysis-grid">
 
         <div class="analysis-card">
-
-            <h3>
-                Pattern analysis
-            </h3>
-
-            <div id="issues">
-                <div class="good">
-                    Enter a password to begin analysis.
-                </div>
-            </div>
-
+          <div class="analysis-title">Pattern analysis</div>
+          <div class="analysis-content" id="issues">
+            Enter a password to see detected patterns.
+          </div>
         </div>
-
 
         <div class="analysis-card">
-
-            <h3>
-                What makes it stronger?
-            </h3>
-
-            <div class="issue">
-                <div class="issue-dot"></div>
-                Use more characters rather than relying only on symbols.
-            </div>
-
-            <div class="issue">
-                <div class="issue-dot"></div>
-                Avoid common words, dates, and keyboard patterns.
-            </div>
-
-            <div class="issue">
-                <div class="issue-dot"></div>
-                Unique passwords are safer than reusing one password.
-            </div>
-
+          <div class="analysis-title">What makes it stronger?</div>
+          <div class="analysis-content">
+            Use a longer password or passphrase, avoid common words,
+            repeated characters, predictable sequences, keyboard patterns,
+            and personally predictable information such as years.
+          </div>
         </div>
 
-    </section>
+      </section>
 
-
-    <div class="privacy">
-
-        <div class="privacy-icon">
-            ◈
-        </div>
+      <div class="privacy-note">
+        <div class="privacy-icon">✓</div>
 
         <div>
-            <strong>Your password stays here.</strong><br>
-            Analysis happens entirely inside your browser.
-            The password is never uploaded to a server,
-            API, database, or third-party service.
+          <strong>Your password stays in this browser.</strong>
+          <span>
+            This page does not upload your password to a server, API,
+            database, analytics service, or third-party website.
+            The analysis is performed locally with JavaScript.
+          </span>
         </div>
+      </div>
 
-    </div>
+    </main>
 
-</main>
+    <footer>
+      JK Security · Password analysis performed locally
+    </footer>
 
+  </div>
 
-<footer>
-    Password Bloom · Private password analysis
-</footer>
+  <script>
+    /*
+      Everything below runs locally in the browser.
 
-</div>
+      There are:
+      - No fetch() requests
+      - No APIs
+      - No external libraries
+      - No analytics
+      - No password uploads
+    */
 
+    const passwordInput = document.getElementById("password");
+    const toggle = document.getElementById("toggle");
 
-<script>
+    const orb = document.getElementById("orb");
+    const orbScore = document.getElementById("orbScore");
+    const strengthText = document.getElementById("strengthText");
+    const strengthDescription = document.getElementById("strengthDescription");
+    const progressFill = document.getElementById("progressFill");
 
-/* =========================
-   COMMON PASSWORDS
-========================= */
+    const entropyEl = document.getElementById("entropy");
+    const guessesEl = document.getElementById("guesses");
+    const crackTimeEl = document.getElementById("crackTime");
+    const lengthEl = document.getElementById("length");
+    const issuesEl = document.getElementById("issues");
 
-const commonPasswords = new Set([
-    "password",
-    "password1",
-    "password123",
-    "123456",
-    "1234567",
-    "12345678",
-    "123456789",
-    "1234567890",
-    "qwerty",
-    "qwerty123",
-    "abc123",
-    "111111",
-    "000000",
-    "letmein",
-    "welcome",
-    "admin",
-    "admin123",
-    "login",
-    "monkey",
-    "dragon",
-    "football",
-    "baseball",
-    "master",
-    "shadow",
-    "superman",
-    "princess",
-    "iloveyou",
-    "sunshine",
-    "whatever",
-    "trustno1",
-    "starwars",
-    "pokemon",
-    "computer",
-    "freedom",
-    "hello",
-    "secret",
-    "passw0rd"
-]);
+    /*
+      Local common-password dictionary.
 
+      This is intentionally stored directly in the page,
+      so checking it never requires sending the password anywhere.
+    */
+    const commonPasswords = new Set([
+      "password",
+      "password1",
+      "password123",
+      "123456",
+      "1234567",
+      "12345678",
+      "123456789",
+      "1234567890",
+      "qwerty",
+      "qwerty123",
+      "qwertyuiop",
+      "abc123",
+      "abc1234",
+      "admin",
+      "admin123",
+      "welcome",
+      "welcome1",
+      "letmein",
+      "monkey",
+      "dragon",
+      "football",
+      "baseball",
+      "iloveyou",
+      "princess",
+      "sunshine",
+      "master",
+      "login",
+      "hello",
+      "freedom",
+      "whatever",
+      "secret",
+      "shadow",
+      "superman",
+      "trustno1"
+    ]);
 
-/* =========================
-   ELEMENTS
-========================= */
+    /* Show / hide password */
+    toggle.addEventListener("click", () => {
+      const showing = passwordInput.type === "text";
 
-const passwordInput =
-    document.getElementById("password");
-
-const toggle =
-    document.getElementById("toggle");
-
-const orb =
-    document.getElementById("orb");
-
-const orbScore =
-    document.getElementById("orbScore");
-
-const progressFill =
-    document.getElementById("progressFill");
-
-const strengthText =
-    document.getElementById("strengthText");
-
-const strengthDescription =
-    document.getElementById("strengthDescription");
-
-const issues =
-    document.getElementById("issues");
-
-
-/* =========================
-   SHOW / HIDE
-========================= */
-
-toggle.addEventListener("click", () => {
-
-    if (passwordInput.type === "password") {
-
-        passwordInput.type = "text";
-        toggle.textContent = "Hide";
-
-    } else {
-
-        passwordInput.type = "password";
-        toggle.textContent = "Show";
-
-    }
-
-});
-
-
-/* =========================
-   INFO BUTTONS
-========================= */
-
-document.querySelectorAll(".info-btn")
-.forEach(button => {
-
-    button.addEventListener("click", event => {
-
-        event.stopPropagation();
-
-        document
-            .querySelectorAll(".tooltip")
-            .forEach(t => t.remove());
-
-        const tooltip =
-            document.createElement("div");
-
-        tooltip.className = "tooltip";
-        tooltip.textContent =
-            button.dataset.info;
-
-        button.parentElement.appendChild(
-            tooltip
-        );
-
+      passwordInput.type = showing ? "password" : "text";
+      toggle.textContent = showing ? "◉" : "◌";
+      toggle.setAttribute(
+        "aria-label",
+        showing ? "Show password" : "Hide password"
+      );
     });
 
-});
+    /* Lightweight tooltip system */
+    document.querySelectorAll(".info-btn").forEach(button => {
+      button.addEventListener("click", event => {
+        event.stopPropagation();
 
+        document.querySelectorAll(".tooltip").forEach(t => t.remove());
 
-document.addEventListener("click", () => {
+        const tooltip = document.createElement("div");
+        tooltip.className = "tooltip";
+        tooltip.textContent = button.dataset.info;
 
-    document
-        .querySelectorAll(".tooltip")
-        .forEach(t => t.remove());
+        button.parentElement.parentElement.appendChild(tooltip);
+      });
+    });
 
-});
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".tooltip").forEach(t => t.remove());
+    });
 
+    function getCharacterPool(password) {
+      let pool = 0;
 
-/* =========================
-   CHARACTER POOL
-========================= */
+      if (/[a-z]/.test(password)) pool += 26;
+      if (/[A-Z]/.test(password)) pool += 26;
+      if (/[0-9]/.test(password)) pool += 10;
+      if (/[^A-Za-z0-9]/.test(password)) pool += 33;
 
-function getCharacterPool(password) {
-
-    let pool = 0;
-
-    if (/[a-z]/.test(password))
-        pool += 26;
-
-    if (/[A-Z]/.test(password))
-        pool += 26;
-
-    if (/[0-9]/.test(password))
-        pool += 10;
-
-    if (/[^A-Za-z0-9]/.test(password))
-        pool += 33;
-
-    return pool;
-}
-
-
-/* =========================
-   ENTROPY
-========================= */
-
-function calculateEntropy(password) {
-
-    const pool =
-        getCharacterPool(password);
-
-    if (!pool)
-        return 0;
-
-    return password.length *
-        Math.log2(pool);
-}
-
-
-/* =========================
-   PATTERNS
-========================= */
-
-function hasRepeatedCharacters(password) {
-
-    return /(.)\1{2,}/.test(password);
-}
-
-
-function hasSequence(password) {
-
-    const lower =
-        password.toLowerCase();
-
-    for (
-        let i = 0;
-        i < lower.length - 2;
-        i++
-    ) {
-
-        const a =
-            lower.charCodeAt(i);
-
-        const b =
-            lower.charCodeAt(i + 1);
-
-        const c =
-            lower.charCodeAt(i + 2);
-
-        if (
-            b === a + 1 &&
-            c === b + 1
-        )
-            return true;
-
-        if (
-            b === a - 1 &&
-            c === b - 1
-        )
-            return true;
+      return pool;
     }
 
-    return false;
-}
+    function calculateEntropy(password) {
+      if (!password) return 0;
 
+      const pool = getCharacterPool(password);
 
-function hasKeyboardPattern(password) {
+      if (!pool) return 0;
 
-    const patterns = [
+      return password.length * Math.log2(pool);
+    }
+
+    function hasRepeatedCharacters(password) {
+      return /(.)\1{2,}/.test(password);
+    }
+
+    function hasSequence(password) {
+      const lower = password.toLowerCase();
+
+      for (let i = 0; i < lower.length - 2; i++) {
+        const a = lower.charCodeAt(i);
+        const b = lower.charCodeAt(i + 1);
+        const c = lower.charCodeAt(i + 2);
+
+        if (
+          (b === a + 1 && c === b + 1) ||
+          (b === a - 1 && c === b - 1)
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function hasKeyboardPattern(password) {
+      const lower = password.toLowerCase();
+
+      const patterns = [
         "qwerty",
         "asdfgh",
         "zxcvbn",
         "qwertyuiop",
         "asdfghjkl",
-        "123456",
-        "654321"
-    ];
+        "zxcvbnm"
+      ];
 
-    const lower =
-        password.toLowerCase();
-
-    return patterns.some(
-        pattern =>
-            lower.includes(pattern)
-    );
-}
-
-
-function containsYear(password) {
-
-    return /(19|20)\d{2}/.test(password);
-}
-
-
-function containsCommonPassword(password) {
-
-    const lower =
-        password.toLowerCase();
-
-    if (commonPasswords.has(lower))
-        return true;
-
-    for (const word of commonPasswords) {
-
-        if (
-            word.length >= 5 &&
-            lower.includes(word)
-        )
-            return true;
+      return patterns.some(pattern => lower.includes(pattern));
     }
 
-    return false;
-}
+    function containsYear(password) {
+      return /(19|20)\d{2}/.test(password);
+    }
 
+    function containsCommonPassword(password) {
+      const lower = password.toLowerCase();
 
-function commonWordPlusNumbers(password) {
+      for (const word of commonPasswords) {
+        if (lower === word || lower.includes(word)) {
+          return true;
+        }
+      }
 
-    const lower =
-        password.toLowerCase();
+      return false;
+    }
 
-    return commonPasswords.has(
-        lower.replace(/[0-9]+$/, "")
-    );
-}
+    function commonWordPlusNumbers(password) {
+      const lower = password.toLowerCase();
+      const stripped = lower.replace(/\d+$/, "");
 
+      return (
+        stripped.length >= 3 &&
+        commonPasswords.has(stripped)
+      );
+    }
 
-/* =========================
-   NUMBER FORMATTING
-========================= */
+    function formatNumber(number) {
+      if (number < 1000) {
+        return Math.round(number).toString();
+      }
 
-function formatNumber(number) {
+      if (number < 1e6) {
+        return (number / 1e3).toFixed(1) + "K";
+      }
 
-    if (number < 1000)
-        return Math.round(number);
+      if (number < 1e9) {
+        return (number / 1e6).toFixed(1) + "M";
+      }
 
-    if (number < 1e6)
-        return Math.round(number / 1e3) + "K";
+      if (number < 1e12) {
+        return (number / 1e9).toFixed(1) + "B";
+      }
 
-    if (number < 1e9)
-        return Math.round(number / 1e6) + "M";
+      if (number < 1e15) {
+        return (number / 1e12).toFixed(1) + "T";
+      }
 
-    if (number < 1e12)
-        return Math.round(number / 1e9) + "B";
+      return number.toExponential(1);
+    }
 
-    return number.toExponential(2);
-}
+    function calculateCrackTime(guesses) {
+      if (!guesses) return "—";
 
+      const guessesPerSecond = 1e10;
+      const seconds = guesses / guessesPerSecond;
 
-/* =========================
-   CRACK TIME
-========================= */
+      if (seconds < 1) return "< 1 sec";
+      if (seconds < 60) return Math.round(seconds) + " sec";
+      if (seconds < 3600) return Math.round(seconds / 60) + " min";
+      if (seconds < 86400) return Math.round(seconds / 3600) + " hrs";
+      if (seconds < 31557600) return Math.round(seconds / 86400) + " days";
+      if (seconds < 3155760000) {
+        return Math.round(seconds / 31557600) + " years";
+      }
 
-function calculateCrackTime(guesses) {
+      return "Centuries";
+    }
 
-    const guessesPerSecond = 1e10;
+    function addIssue(text, type = "normal") {
+      const item = document.createElement("div");
+      item.className = "issue";
 
-    const seconds =
-        guesses / guessesPerSecond;
+      const dot = document.createElement("div");
+      dot.className = "issue-dot";
 
-    if (seconds < 1)
-        return "Less than a second";
+      if (type === "warning") {
+        dot.style.background = "var(--danger)";
+      }
 
-    if (seconds < 60)
-        return Math.round(seconds) + " sec";
+      const message = document.createElement("div");
+      message.textContent = text;
 
-    if (seconds < 3600)
-        return Math.round(seconds / 60) + " min";
+      item.appendChild(dot);
+      item.appendChild(message);
 
-    if (seconds < 86400)
-        return Math.round(seconds / 3600) + " hrs";
+      issuesEl.appendChild(item);
+    }
 
-    if (seconds < 31557600)
-        return Math.round(seconds / 86400) + " days";
-
-    const years =
-        seconds / 31557600;
-
-    if (years < 1000)
-        return Math.round(years) + " years";
-
-    if (years < 1e6)
-        return Math.round(years / 1000) + "K years";
-
-    if (years < 1e9)
-        return Math.round(years / 1e6) + "M years";
-
-    return "Extremely long";
-}
-
-
-/* =========================
-   UPDATE ORB
-========================= */
-
-function updateOrb(percent, score) {
-
-    const degrees =
-        Math.round(percent * 3.6);
-
-    orb.style.background =
-        `conic-gradient(
-            #73d5ad ${degrees}deg,
-            rgba(255,255,255,.05) ${degrees}deg
-        )`;
-
-    orbScore.textContent =
-        score + "%";
-
-    progressFill.style.width =
-        score + "%";
-}
-
-
-/* =========================
-   MAIN ANALYSIS
-========================= */
-
-function analyze() {
-
-    const password =
-        passwordInput.value;
-
-    if (!password) {
-
-        document.getElementById("entropy")
-            .textContent = "—";
-
-        document.getElementById("guesses")
-            .textContent = "—";
-
-        document.getElementById("crackTime")
-            .textContent = "—";
-
-        document.getElementById("length")
-            .textContent = "0";
-
-        strengthText.textContent =
-            "Waiting for a password";
-
+    function analyze(password) {
+      if (!password) {
+        orbScore.textContent = "0%";
+        strengthText.textContent = "Waiting for a password";
         strengthDescription.textContent =
-            "Enter a password above and the analyzer will look for predictable patterns.";
-
-        orbScore.textContent = "—";
-
-        orb.style.background =
-            "conic-gradient(#73d5ad 0deg, rgba(255,255,255,.05) 0deg)";
+          "Enter a password above and the analysis will happen locally.";
 
         progressFill.style.width = "0%";
+        orb.style.background =
+          "radial-gradient(circle at center, rgba(115, 213, 173, 0.08) 0 53%, transparent 54%), conic-gradient(var(--green) 0deg, rgba(255,255,255,0.06) 0deg)";
 
-        issues.innerHTML =
-            '<div class="good">Enter a password to begin analysis.</div>';
+        entropyEl.textContent = "—";
+        guessesEl.textContent = "—";
+        crackTimeEl.textContent = "—";
+        lengthEl.textContent = "0 chars";
+        issuesEl.textContent =
+          "Enter a password to see detected patterns.";
 
         return;
-    }
+      }
 
+      const rawEntropy = calculateEntropy(password);
 
-    const entropy =
-        calculateEntropy(password);
+      let effectiveEntropy = rawEntropy;
+      const findings = [];
 
-    let effectiveEntropy =
-        entropy;
+      const common = containsCommonPassword(password);
+      const commonPlusNumbers = commonWordPlusNumbers(password);
+      const repeated = hasRepeatedCharacters(password);
+      const sequence = hasSequence(password);
+      const keyboard = hasKeyboardPattern(password);
+      const year = containsYear(password);
 
-    const foundIssues = [];
-
-
-    if (containsCommonPassword(password)) {
-
+      if (common) {
         effectiveEntropy -= 25;
+        findings.push({
+          text: "Contains a commonly used password or word.",
+          type: "warning"
+        });
+      }
 
-        foundIssues.push(
-            "Contains a common password or commonly used word."
-        );
-    }
-
-
-    if (commonWordPlusNumbers(password)) {
-
+      if (commonPlusNumbers) {
         effectiveEntropy -= 10;
+        findings.push({
+          text: "Uses a common word followed by numbers.",
+          type: "warning"
+        });
+      }
 
-        foundIssues.push(
-            "Uses the predictable pattern of a common word followed by numbers."
-        );
-    }
-
-
-    if (hasRepeatedCharacters(password)) {
-
+      if (repeated) {
         effectiveEntropy -= 8;
+        findings.push({
+          text: "Contains repeated characters.",
+          type: "warning"
+        });
+      }
 
-        foundIssues.push(
-            "Contains repeated characters that reduce unpredictability."
-        );
-    }
-
-
-    if (hasSequence(password)) {
-
+      if (sequence) {
         effectiveEntropy -= 8;
+        findings.push({
+          text: "Contains a predictable sequence.",
+          type: "warning"
+        });
+      }
 
-        foundIssues.push(
-            "Contains a simple alphabetical or numerical sequence."
-        );
-    }
-
-
-    if (hasKeyboardPattern(password)) {
-
+      if (keyboard) {
         effectiveEntropy -= 12;
+        findings.push({
+          text: "Contains a recognizable keyboard pattern.",
+          type: "warning"
+        });
+      }
 
-        foundIssues.push(
-            "Contains a predictable keyboard pattern."
-        );
-    }
-
-
-    if (containsYear(password)) {
-
+      if (year) {
         effectiveEntropy -= 5;
+        findings.push({
+          text: "Contains a four-digit year.",
+          type: "warning"
+        });
+      }
 
-        foundIssues.push(
-            "Contains a year, which is commonly tested by attackers."
-        );
-    }
+      effectiveEntropy = Math.max(0, effectiveEntropy);
 
+      /*
+        Convert the heuristic entropy into a simple visual score.
+      */
+      let score;
 
-    effectiveEntropy =
-        Math.max(0, effectiveEntropy);
+      if (effectiveEntropy < 25) {
+        score = 15;
+      } else if (effectiveEntropy < 40) {
+        score = 30;
+      } else if (effectiveEntropy < 60) {
+        score = 55;
+      } else if (effectiveEntropy < 80) {
+        score = 78;
+      } else {
+        score = 96;
+      }
 
+      let label;
+      let description;
 
-    const guesses =
-        Math.pow(2, effectiveEntropy);
-
-
-    let percent;
-
-    if (effectiveEntropy < 25)
-        percent = 15;
-    else if (effectiveEntropy < 40)
-        percent = 30;
-    else if (effectiveEntropy < 60)
-        percent = 55;
-    else if (effectiveEntropy < 80)
-        percent = 78;
-    else
-        percent = 96;
-
-
-    let label;
-    let description;
-
-
-    if (effectiveEntropy < 25) {
-
+      if (effectiveEntropy < 25) {
         label = "Very weak";
-
         description =
-            "This password has several characteristics that make it relatively predictable.";
-
-    } else if (effectiveEntropy < 40) {
-
+          "This password has patterns that make guessing significantly easier.";
+      } else if (effectiveEntropy < 40) {
         label = "Weak";
-
         description =
-            "There is some variety, but an attacker may still have useful patterns to exploit.";
-
-    } else if (effectiveEntropy < 60) {
-
+          "It has some useful complexity, but predictable patterns reduce its strength.";
+      } else if (effectiveEntropy < 60) {
         label = "Moderate";
-
         description =
-            "This password has reasonable complexity, but there is still room for improvement.";
-
-    } else if (effectiveEntropy < 80) {
-
+          "This is reasonably complex, but adding length would improve it.";
+      } else if (effectiveEntropy < 80) {
         label = "Strong";
-
         description =
-            "This password has good resistance to common guessing strategies.";
-
-    } else {
-
+          "Good complexity and length make this considerably harder to guess.";
+      } else {
         label = "Very strong";
-
         description =
-            "No obvious patterns were detected and the estimated search space is large.";
+          "This password has high estimated resistance to large-scale guessing.";
+      }
 
-    }
+      const guesses = Math.pow(2, effectiveEntropy);
 
+      entropyEl.textContent =
+        effectiveEntropy.toFixed(1) + " bits";
 
-    document.getElementById("entropy")
-        .textContent =
-        Math.round(effectiveEntropy) + " bits";
-
-
-    document.getElementById("guesses")
-        .textContent =
+      guessesEl.textContent =
         formatNumber(guesses);
 
-
-    document.getElementById("crackTime")
-        .textContent =
+      crackTimeEl.textContent =
         calculateCrackTime(guesses);
 
+      lengthEl.textContent =
+        password.length + " chars";
 
-    document.getElementById("length")
-        .textContent =
-        password.length;
+      orbScore.textContent = score + "%";
+      strengthText.textContent = label;
+      strengthDescription.textContent = description;
+      progressFill.style.width = score + "%";
 
+      const degrees = score * 3.6;
 
-    strengthText.textContent =
-        label;
+      orb.style.background =
+        `radial-gradient(circle at center, rgba(115, 213, 173, 0.08) 0 53%, transparent 54%),
+         conic-gradient(var(--green) ${degrees}deg, rgba(255,255,255,0.06) ${degrees}deg)`;
 
-    strengthDescription.textContent =
-        description;
+      issuesEl.innerHTML = "";
 
-
-    updateOrb(
-        percent,
-        percent
-    );
-
-
-    if (!foundIssues.length) {
-
-        issues.innerHTML =
-            '<div class="good">✓ No obvious predictable patterns were detected.</div>';
-
-    } else {
-
-        issues.innerHTML =
-            foundIssues.map(issue => `
-                <div class="issue">
-                    <div class="issue-dot"></div>
-                    <div>${issue}</div>
-                </div>
-            `).join("");
-
+      if (findings.length === 0) {
+        addIssue("No major predictable patterns detected.");
+      } else {
+        findings.forEach(finding => {
+          addIssue(finding.text, finding.type);
+        });
+      }
     }
-}
 
+    /*
+      input event is efficient enough for this page because
+      the analysis is entirely local and very lightweight.
+    */
+    passwordInput.addEventListener("input", () => {
+      analyze(passwordInput.value);
+    });
 
-passwordInput.addEventListener(
-    "input",
-    analyze
-);
-
-</script>
+    analyze("");
+  </script>
 
 </body>
 </html>
-```
+
