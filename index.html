@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Password Strength Analyzer</title>
+<title>Password Bloom</title>
 
 <style>
 
@@ -15,118 +15,126 @@
 
 body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #0f172a;
-    color: #f8fafc;
     min-height: 100vh;
-}
+    font-family: Arial, Helvetica, sans-serif;
+    color: #24323a;
 
-/* =========================
-   LOADING SCREEN
-========================= */
+    background:
+        radial-gradient(circle at 15% 20%, rgba(180, 230, 210, .7), transparent 30%),
+        radial-gradient(circle at 85% 15%, rgba(210, 225, 250, .8), transparent 30%),
+        radial-gradient(circle at 70% 85%, rgba(240, 220, 240, .7), transparent 30%),
+        linear-gradient(135deg, #eef8f3, #f5f8fc 50%, #f8f1f8);
 
-#loadingScreen {
-    position: fixed;
-    inset: 0;
-    background: #020617;
-    z-index: 9999;
     display: flex;
-    align-items: center;
     justify-content: center;
-    overflow: hidden;
-}
-
-.matrix {
-    position: absolute;
-    inset: 0;
-    opacity: .18;
-    color: #22c55e;
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 20px;
-    word-break: break-all;
-    overflow: hidden;
-}
-
-.loadingContent {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    width: 90%;
-    max-width: 600px;
-}
-
-.lock {
-    font-size: 55px;
-    margin-bottom: 15px;
-}
-
-.loadingTitle {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.loadingText {
-    color: #94a3b8;
-    font-family: monospace;
-    min-height: 20px;
-}
-
-.loadingBar {
-    margin: 25px auto 0;
-    width: 100%;
-    max-width: 400px;
-    height: 5px;
-    background: #1e293b;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.loadingProgress {
-    height: 100%;
-    width: 0%;
-    background: #22c55e;
-    transition: width .15s linear;
+    padding: 50px 18px;
 }
 
 
 /* =========================
-   MAIN PAGE
+   BACKGROUND BLOOMS
 ========================= */
 
-#app {
-    display: none;
-    padding: 40px 15px;
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    z-index: -1;
 }
+
+body::before {
+    width: 280px;
+    height: 280px;
+    background: rgba(143, 211, 183, .25);
+    top: 8%;
+    left: 5%;
+}
+
+body::after {
+    width: 320px;
+    height: 320px;
+    background: rgba(191, 181, 231, .22);
+    bottom: 5%;
+    right: 5%;
+}
+
+
+/* =========================
+   MAIN
+========================= */
 
 .container {
     width: 100%;
-    max-width: 750px;
-    margin: auto;
+    max-width: 760px;
 }
 
 .card {
-    background: #1e293b;
-    border-radius: 18px;
-    padding: 30px;
-    box-shadow: 0 20px 50px rgba(0,0,0,.35);
+    background: rgba(255, 255, 255, .78);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(255, 255, 255, .8);
+
+    border-radius: 28px;
+    padding: 38px;
+
+    box-shadow:
+        0 25px 70px rgba(72, 92, 88, .12),
+        0 5px 20px rgba(72, 92, 88, .06);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.logo {
+    width: 64px;
+    height: 64px;
+
+    margin: 0 auto 18px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #d8f1e3,
+            #e9def4
+        );
+
+    box-shadow:
+        0 10px 25px rgba(100, 130, 120, .15);
 }
 
 h1 {
     text-align: center;
-    margin-top: 0;
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -.5px;
 }
 
 .subtitle {
     text-align: center;
-    color: #94a3b8;
-    margin-bottom: 30px;
+    color: #718087;
+    margin: 10px auto 32px;
+    max-width: 520px;
+    line-height: 1.5;
 }
 
 
 /* =========================
-   PASSWORD INPUT
+   INPUT
 ========================= */
 
 .passwordRow {
@@ -136,136 +144,233 @@ h1 {
 
 input {
     flex: 1;
-    padding: 15px;
-    border-radius: 10px;
-    border: 2px solid #475569;
-    background: #0f172a;
-    color: white;
+
+    padding: 16px 17px;
+
+    border-radius: 14px;
+
+    border: 1px solid #d8e2df;
+
+    background: rgba(255,255,255,.8);
+
+    color: #24323a;
+
     font-size: 16px;
+
     outline: none;
+
+    transition:
+        border .2s,
+        box-shadow .2s;
+}
+
+input::placeholder {
+    color: #a2afb3;
 }
 
 input:focus {
-    border-color: #60a5fa;
+    border-color: #9ccdb7;
+
+    box-shadow:
+        0 0 0 4px rgba(156,205,183,.15);
 }
 
 button {
     border: none;
-    border-radius: 10px;
-    padding: 0 18px;
-    background: #3b82f6;
+
+    border-radius: 14px;
+
+    padding: 0 20px;
+
+    background: #8fc7ad;
+
     color: white;
+
+    font-size: 14px;
+
     cursor: pointer;
+
+    transition:
+        background .2s,
+        transform .2s;
 }
 
 button:hover {
-    background: #2563eb;
+    background: #7bb99e;
+    transform: translateY(-1px);
 }
 
 
 /* =========================
-   STRENGTH BAR
+   STRENGTH
 ========================= */
 
 .strength {
-    margin-top: 25px;
+    margin-top: 27px;
 }
 
 .bar {
+    height: 11px;
+
     width: 100%;
-    height: 14px;
-    background: #334155;
+
+    background: #e4ebe8;
+
     border-radius: 20px;
+
     overflow: hidden;
 }
 
 #barFill {
     height: 100%;
+
     width: 0%;
-    transition: width .3s;
-    background: #ef4444;
+
+    border-radius: 20px;
+
+    background: #9ccdb7;
+
+    transition:
+        width .4s ease,
+        background .4s ease;
 }
 
 #strengthText {
     text-align: center;
-    font-size: 22px;
-    font-weight: bold;
+
     margin-top: 12px;
+
+    font-size: 20px;
+
+    font-weight: 600;
+
+    color: #53666b;
 }
 
 
 /* =========================
-   STATS
+   STAT CARDS
 ========================= */
 
 .stats {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-top: 25px;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 14px;
+
+    margin-top: 28px;
 }
 
 .stat {
-    background: #0f172a;
+    background: rgba(247,250,249,.9);
+
+    border: 1px solid #e3ebe8;
+
     padding: 18px;
-    border-radius: 12px;
+
+    border-radius: 16px;
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+}
+
+.stat:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(80,100,95,.08);
 }
 
 .statTitle {
-    color: #94a3b8;
+    color: #829095;
+
     font-size: 13px;
+
     display: flex;
+
     align-items: center;
+
     gap: 7px;
 }
 
 .statValue {
-    margin-top: 6px;
+    margin-top: 7px;
+
     font-size: 20px;
-    font-weight: bold;
+
+    font-weight: 600;
+
+    color: #35474d;
 }
 
 
 /* =========================
-   QUESTION MARK
+   INFO BUTTONS
 ========================= */
+
+.infoContainer {
+    position: relative;
+}
 
 .infoButton {
     width: 18px;
     height: 18px;
+
     padding: 0;
+
     border-radius: 50%;
-    background: #475569;
+
+    background: #c8d8d2;
+
     color: white;
-    font-size: 12px;
+
+    font-size: 11px;
+
     font-weight: bold;
+
     display: inline-flex;
+
     align-items: center;
     justify-content: center;
+
     cursor: pointer;
 }
 
 .infoButton:hover {
-    background: #64748b;
+    background: #9fc1b3;
 }
 
 .tooltip {
     position: absolute;
-    width: 230px;
-    background: #020617;
-    border: 1px solid #475569;
-    border-radius: 10px;
-    padding: 12px;
-    font-size: 12px;
-    color: #cbd5e1;
-    line-height: 1.4;
-    box-shadow: 0 10px 25px rgba(0,0,0,.4);
-    z-index: 10;
-    display: none;
-}
 
-.infoContainer {
-    position: relative;
+    width: 245px;
+
+    left: 50%;
+    top: 27px;
+
+    transform: translateX(-50%);
+
+    background: #ffffff;
+
+    border: 1px solid #dce7e3;
+
+    border-radius: 12px;
+
+    padding: 13px;
+
+    font-size: 12px;
+
+    color: #64757a;
+
+    line-height: 1.5;
+
+    box-shadow:
+        0 12px 30px rgba(60,80,75,.14);
+
+    z-index: 20;
 }
 
 
@@ -274,27 +379,45 @@ button:hover {
 ========================= */
 
 .section {
-    margin-top: 28px;
+    margin-top: 30px;
 }
 
 .section h2 {
     font-size: 18px;
+
+    margin-bottom: 12px;
+
+    color: #43575d;
 }
 
 .issue {
-    padding: 12px;
+    padding: 13px;
+
     margin-top: 8px;
-    border-radius: 8px;
-    background: #3f1d1d;
-    color: #fca5a5;
+
+    border-radius: 12px;
+
+    background: #fff4f2;
+
+    border: 1px solid #f1d9d4;
+
+    color: #9a6861;
+
+    line-height: 1.4;
 }
 
 .good {
-    padding: 12px;
+    padding: 13px;
+
     margin-top: 8px;
-    border-radius: 8px;
-    background: #143522;
-    color: #86efac;
+
+    border-radius: 12px;
+
+    background: #eef9f2;
+
+    border: 1px solid #d4ebdc;
+
+    color: #5d896d;
 }
 
 
@@ -303,12 +426,21 @@ button:hover {
 ========================= */
 
 .privacy {
-    margin-top: 25px;
-    padding: 15px;
-    border-radius: 10px;
-    background: #172554;
-    color: #bfdbfe;
-    font-size: 14px;
+    margin-top: 26px;
+
+    padding: 16px;
+
+    border-radius: 14px;
+
+    background: #f1f6fb;
+
+    border: 1px solid #dce7f0;
+
+    color: #667982;
+
+    font-size: 13px;
+
+    line-height: 1.5;
 }
 
 
@@ -317,6 +449,15 @@ button:hover {
 ========================= */
 
 @media (max-width: 600px) {
+
+    body {
+        padding: 25px 12px;
+    }
+
+    .card {
+        padding: 25px 20px;
+        border-radius: 22px;
+    }
 
     .stats {
         grid-template-columns: 1fr;
@@ -327,7 +468,12 @@ button:hover {
     }
 
     button {
-        padding: 13px;
+        padding: 14px;
+    }
+
+    .tooltip {
+        left: 0;
+        transform: none;
     }
 
 }
@@ -335,57 +481,24 @@ button:hover {
 </style>
 </head>
 
+
 <body>
-
-
-<!-- =========================
-     LOADING SCREEN
-========================= -->
-
-<div id="loadingScreen">
-
-    <div class="matrix" id="matrix"></div>
-
-    <div class="loadingContent">
-
-        <div class="lock">🔐</div>
-
-        <div class="loadingTitle">
-            PASSWORD SECURITY
-        </div>
-
-        <div class="loadingText" id="loadingText">
-            Initializing security analyzer...
-        </div>
-
-        <div class="loadingBar">
-
-            <div
-                class="loadingProgress"
-                id="loadingProgress">
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================
-     APPLICATION
-========================= -->
-
-<div id="app">
 
 <div class="container">
 
 <div class="card">
 
-<h1>🔐 Password Strength Analyzer</h1>
+
+<div class="logo">
+    🌿
+</div>
+
+
+<h1>Password Bloom</h1>
 
 <p class="subtitle">
-Analyze password guessability entirely in your browser.
+A calm, private way to understand how resistant your password
+is to common guessing techniques.
 </p>
 
 
@@ -408,11 +521,13 @@ Analyze password guessability entirely in your browser.
 <div class="strength">
 
 <div class="bar">
-    <div id="barFill"></div>
+
+<div id="barFill"></div>
+
 </div>
 
 <div id="strengthText">
-    Enter a password
+Enter a password
 </div>
 
 </div>
@@ -420,8 +535,6 @@ Analyze password guessability entirely in your browser.
 
 <div class="stats">
 
-
-<!-- ENTROPY -->
 
 <div class="stat">
 
@@ -433,7 +546,7 @@ Entropy
 
 <button
     class="infoButton"
-    data-info="Entropy measures how unpredictable a password is. Higher entropy generally means more possible combinations and therefore more resistance to guessing."
+    data-info="Entropy is a measure of unpredictability. Higher entropy generally means there are more possible combinations an attacker would need to consider."
 >
 ?
 </button>
@@ -449,8 +562,6 @@ Entropy
 </div>
 
 
-<!-- GUESSES -->
-
 <div class="stat">
 
 <div class="statTitle">
@@ -461,7 +572,7 @@ Estimated guesses
 
 <button
     class="infoButton"
-    data-info="This estimates how many guesses an attacker might need in a simplified brute-force model. Real attackers use dictionaries, leaked passwords and other techniques, so this is only an estimate."
+    data-info="This estimates the number of guesses needed in a simplified brute-force model. Real attackers can use dictionaries, leaked passwords, and other techniques."
 >
 ?
 </button>
@@ -477,8 +588,6 @@ Estimated guesses
 </div>
 
 
-<!-- CRACK TIME -->
-
 <div class="stat">
 
 <div class="statTitle">
@@ -489,7 +598,7 @@ Estimated crack time
 
 <button
     class="infoButton"
-    data-info="This is an approximate time based on the estimated number of guesses and a hypothetical offline attacker making 10 billion guesses per second. Actual times vary greatly depending on the password hashing system and hardware."
+    data-info="This is an approximate calculation using a hypothetical offline attacker. Actual cracking speed depends heavily on the password hashing algorithm and hardware."
 >
 ?
 </button>
@@ -505,8 +614,6 @@ Estimated crack time
 </div>
 
 
-<!-- LENGTH -->
-
 <div class="stat">
 
 <div class="statTitle">
@@ -517,7 +624,7 @@ Length
 
 <button
     class="infoButton"
-    data-info="The total number of characters in the password. Longer passwords are generally harder to brute-force, especially when they are not predictable."
+    data-info="The number of characters in the password. Longer passwords are generally harder to brute-force when they are not based on predictable patterns."
 >
 ?
 </button>
@@ -549,15 +656,13 @@ Enter a password to begin the analysis.
 
 <div class="privacy">
 
-🔒 <strong>Privacy:</strong>
+<strong>Private by design.</strong>
 
-Your password is analyzed entirely inside your browser.
-Nothing is sent to a server, API, database, or third-party service.
-
-</div>
-
+Your password is analyzed entirely in your browser.
+It is never sent to a server, API, database, or third-party service.
 
 </div>
+
 
 </div>
 
@@ -568,121 +673,7 @@ Nothing is sent to a server, API, database, or third-party service.
 
 
 /* =========================
-   LOADING ANIMATION
-========================= */
-
-const matrix =
-    document.getElementById("matrix");
-
-const loadingProgress =
-    document.getElementById("loadingProgress");
-
-const loadingText =
-    document.getElementById("loadingText");
-
-
-const characters =
-    "0123456789ABCDEF";
-
-
-function generateRandomText() {
-
-    let text = "";
-
-    for (let i = 0; i < 3000; i++) {
-
-        text +=
-            characters[
-                Math.floor(
-                    Math.random() *
-                    characters.length
-                )
-            ];
-
-    }
-
-    return text;
-
-}
-
-
-matrix.textContent =
-    generateRandomText();
-
-
-let progress = 0;
-
-
-const loadingMessages = [
-
-    "Initializing security analyzer...",
-    "Loading password intelligence...",
-    "Checking pattern detection...",
-    "Preparing entropy calculator...",
-    "Initializing local analysis...",
-    "Securing client-side processing...",
-    "Analyzer ready."
-
-];
-
-
-const loadingInterval =
-    setInterval(() => {
-
-        progress += Math.random() * 8 + 3;
-
-        if (progress >= 100) {
-
-            progress = 100;
-
-            clearInterval(loadingInterval);
-
-            loadingText.textContent =
-                "Analyzer ready.";
-
-            setTimeout(() => {
-
-                document.getElementById(
-                    "loadingScreen"
-                ).style.opacity = "0";
-
-                document.getElementById(
-                    "loadingScreen"
-                ).style.transition = "opacity .4s";
-
-                setTimeout(() => {
-
-                    document.getElementById(
-                        "loadingScreen"
-                    ).style.display = "none";
-
-                    document.getElementById(
-                        "app"
-                    ).style.display = "block";
-
-                }, 400);
-
-            }, 250);
-
-        }
-
-        loadingProgress.style.width =
-            progress + "%";
-
-        const messageIndex =
-            Math.min(
-                Math.floor(progress / 15),
-                loadingMessages.length - 1
-            );
-
-        loadingText.textContent =
-            loadingMessages[messageIndex];
-
-    }, 120);
-
-
-/* =========================
-   PASSWORD CHECKER
+   COMMON PASSWORDS
 ========================= */
 
 const commonPasswords = new Set([
@@ -728,36 +719,46 @@ const commonPasswords = new Set([
 ]);
 
 
+/* =========================
+   ELEMENTS
+========================= */
+
 const passwordInput =
     document.getElementById("password");
 
-
-passwordInput.addEventListener(
-    "input",
-    analyzePassword
-);
+const toggleButton =
+    document.getElementById("toggle");
 
 
-document.getElementById("toggle")
-.addEventListener("click", () => {
+/* =========================
+   SHOW / HIDE
+========================= */
 
-    if (passwordInput.type === "password") {
+toggleButton.addEventListener(
+    "click",
+    () => {
 
-        passwordInput.type = "text";
+        if (
+            passwordInput.type === "password"
+        ) {
 
-        document.getElementById("toggle")
-            .textContent = "Hide";
+            passwordInput.type = "text";
 
-    } else {
+            toggleButton.textContent =
+                "Hide";
 
-        passwordInput.type = "password";
+        } else {
 
-        document.getElementById("toggle")
-            .textContent = "Show";
+            passwordInput.type =
+                "password";
+
+            toggleButton.textContent =
+                "Show";
+
+        }
 
     }
-
-});
+);
 
 
 /* =========================
@@ -767,48 +768,51 @@ document.getElementById("toggle")
 document.querySelectorAll(".infoButton")
 .forEach(button => {
 
-    button.addEventListener("click", event => {
+    button.addEventListener(
+        "click",
+        event => {
 
-        event.stopPropagation();
+            event.stopPropagation();
 
-        const existing =
-            button.parentElement.querySelector(
-                ".tooltip"
+            document
+                .querySelectorAll(".tooltip")
+                .forEach(
+                    tooltip =>
+                        tooltip.remove()
+                );
+
+            const tooltip =
+                document.createElement("div");
+
+            tooltip.className =
+                "tooltip";
+
+            tooltip.textContent =
+                button.dataset.info;
+
+            button.parentElement.appendChild(
+                tooltip
             );
 
-        document.querySelectorAll(".tooltip")
-        .forEach(t => t.remove());
-
-        if (existing) {
-            existing.remove();
-            return;
         }
-
-        const tooltip =
-            document.createElement("div");
-
-        tooltip.className = "tooltip";
-
-        tooltip.textContent =
-            button.dataset.info;
-
-        button.parentElement.appendChild(
-            tooltip
-        );
-
-        tooltip.style.display = "block";
-
-    });
+    );
 
 });
 
 
-document.addEventListener("click", () => {
+document.addEventListener(
+    "click",
+    () => {
 
-    document.querySelectorAll(".tooltip")
-    .forEach(t => t.remove());
+        document
+            .querySelectorAll(".tooltip")
+            .forEach(
+                tooltip =>
+                    tooltip.remove()
+            );
 
-});
+    }
+);
 
 
 /* =========================
@@ -960,7 +964,9 @@ function containsCommonPassword(password) {
             word.length >= 5 &&
             lower.includes(word)
         ) {
+
             return true;
+
         }
 
     }
@@ -983,7 +989,7 @@ function commonWordPlusNumbers(password) {
 
 
 /* =========================
-   NUMBER FORMATTING
+   FORMAT NUMBERS
 ========================= */
 
 function formatNumber(number) {
@@ -1079,7 +1085,7 @@ function calculateCrackTime(guesses) {
 
 
 /* =========================
-   MAIN ANALYSIS
+   PASSWORD ANALYSIS
 ========================= */
 
 function analyzePassword() {
@@ -1087,9 +1093,10 @@ function analyzePassword() {
     const password =
         passwordInput.value;
 
-
     const analysis =
-        document.getElementById("analysis");
+        document.getElementById(
+            "analysis"
+        );
 
 
     if (password.length === 0) {
@@ -1130,10 +1137,8 @@ function analyzePassword() {
     const entropy =
         calculateEntropy(password);
 
-
     let effectiveEntropy =
         entropy;
-
 
     const issues = [];
 
@@ -1210,7 +1215,7 @@ function analyzePassword() {
         effectiveEntropy -= 5;
 
         issues.push(
-            "Years are commonly included in passwords and are easy to test."
+            "Years are commonly included in passwords and are easier for attackers to test."
         );
 
     }
@@ -1260,22 +1265,30 @@ function analyzePassword() {
     let percentage;
 
 
-    if (effectiveEntropy < 25) {
+    if (
+        effectiveEntropy < 25
+    ) {
 
         strength = "Very Weak";
         percentage = 15;
 
-    } else if (effectiveEntropy < 40) {
+    } else if (
+        effectiveEntropy < 40
+    ) {
 
         strength = "Weak";
         percentage = 30;
 
-    } else if (effectiveEntropy < 60) {
+    } else if (
+        effectiveEntropy < 60
+    ) {
 
         strength = "Moderate";
         percentage = 50;
 
-    } else if (effectiveEntropy < 80) {
+    } else if (
+        effectiveEntropy < 80
+    ) {
 
         strength = "Strong";
         percentage = 75;
@@ -1309,14 +1322,21 @@ function analyzePassword() {
 
         analysis.innerHTML =
             issues
-                .map(issue =>
-                    `<div class="issue">⚠ ${issue}</div>`
+                .map(
+                    issue =>
+                        `<div class="issue">• ${issue}</div>`
                 )
                 .join("");
 
     }
 
 }
+
+
+passwordInput.addEventListener(
+    "input",
+    analyzePassword
+);
 
 </script>
 
