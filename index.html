@@ -27,25 +27,29 @@ button{font-family:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
 ::selection{background:rgba(184,243,107,.3)}
 .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
-.wrap{width:min(1080px,calc(100% - 36px));margin:auto}
+.wrap{width:min(1120px,calc(100% - 32px));margin:auto}
 
 /* header */
-header{position:sticky;top:0;z-index:40;background:rgba(7,8,10,.62);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border-bottom:1px solid rgba(255,255,255,.06)}
-nav{height:64px;display:flex;align-items:center;gap:14px}
-.brand{font:700 22px "Space Grotesk",sans-serif;letter-spacing:-.05em;transition:color .2s}
-.brand i{font-style:normal;color:var(--accent)}.brand:hover{color:var(--accent)}
+header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);background:rgba(7,8,10,.62);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav{width:min(1120px,calc(100% - 32px));margin:auto;display:flex;align-items:center;gap:14px;height:62px}
+.logo{font:700 22px "Space Grotesk",sans-serif;letter-spacing:-.05em;transition:color .2s}
+.logo i{color:var(--accent);font-style:normal}
+.logo:hover{color:var(--accent)}
 .crumb{color:var(--dim);font-size:14px}.crumb b{color:var(--muted);font-weight:500}
-.pill{display:flex;align-items:center;gap:8px;margin-left:auto;padding:6px 13px;border-radius:99px;border:1px solid var(--line);color:#d4d8d6;font-size:12px;white-space:nowrap}
-.pill .d{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:ping 2s infinite}
-@keyframes ping{0%{box-shadow:0 0 0 0 rgba(184,243,107,.6)}70%,100%{box-shadow:0 0 0 8px rgba(184,243,107,0)}}
-.back{padding:6px 13px;border-radius:99px;color:var(--muted);font-size:13px;transition:.2s}
-.back:hover{color:var(--text);background:rgba(255,255,255,.06)}
-@media(max-width:700px){.crumb,.back{display:none}.pill{font-size:11px}}
+.links{display:flex;gap:2px;margin-left:auto}
+.links a{padding:6px 12px;border-radius:99px;color:var(--muted);font-size:14px;font-weight:500;transition:color .2s,background .2s}
+.links a:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.clock{font:500 12px "JetBrains Mono",monospace;color:var(--dim);padding:6px 12px;border:1px solid var(--line);border-radius:99px;white-space:nowrap}
+.clock b{color:var(--text);font-weight:500}
+.menu{display:none;margin-left:auto;padding:7px 14px;border:1px solid var(--line);border-radius:99px;background:none;color:var(--text);font-size:13px;cursor:pointer}
+@media(max-width:760px){.crumb,.clock{display:none}.menu{display:block}.links{display:none;position:absolute;top:62px;left:0;right:0;flex-direction:column;padding:10px 16px 16px;background:rgba(7,8,10,.96);border-bottom:1px solid var(--line)}header.open .links{display:flex}}
 
 /* hero */
 .hero{display:grid;grid-template-columns:1.3fr .7fr;gap:30px;align-items:center;padding:64px 0 34px}
 @media(max-width:860px){.hero{grid-template-columns:1fr;padding-top:44px}.vault{display:none}}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border:1px solid var(--line);border-radius:99px;background:rgba(255,255,255,.03);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 10px;border:1px solid var(--line2);border-radius:99px;background:rgba(255,255,255,.03);color:var(--muted);font-size:13px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:ping 2s infinite}
+.eyebrow .new{padding:1px 7px;border-radius:99px;background:var(--accent);color:#10120b;font-size:11px;font-weight:700}
 h1,h2,h3{font-family:"Space Grotesk",sans-serif;letter-spacing:-.055em;line-height:1.02}
 h1{font-size:clamp(44px,7.4vw,84px);margin:20px 0 18px}
 h1 .soft{color:#8d928f}
@@ -233,8 +237,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .how p{color:var(--muted);font-size:14px;margin:6px 0 0}
 .how code{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--accent)}
 
-footer{margin-top:80px;border-top:1px solid var(--line)}
-footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:24px 0 34px;color:var(--dim);font-size:13px}
+footer{border-top:1px solid var(--line);margin-top:80px}
+footer .nav{height:auto;padding:22px 0;color:var(--dim);font-size:14px}
 footer a:hover{color:var(--accent)}
 .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);padding:10px 18px;border-radius:99px;background:var(--accent);color:#10120b;font-weight:700;font-size:14px;opacity:0;transition:.3s;z-index:90;pointer-events:none}
 .toast.on{opacity:1;transform:translate(-50%,0)}
@@ -244,21 +248,22 @@ footer a:hover{color:var(--accent)}
 <body>
 <div class="blob b1"></div><div class="blob b2"></div>
 
-<header>
-  <div class="wrap">
-    <nav aria-label="Main navigation">
-      <a class="brand" href="https://joshkoppanalil.com/">JK<i>.</i></a>
-      <span class="crumb">/ <b>Password Strength</b></span>
-      <span class="pill"><span class="d"></span>100% client-side · nothing leaves your browser</span>
-      <a class="back" href="https://joshkoppanalil.com/#projects">← All projects</a>
+<header id="hdr">
+  <div class="nav">
+    <a class="logo" href="https://joshkoppanalil.com/">JK<i>.</i></a>
+    <span class="crumb">/ <b>Password Strength</b></span>
+    <nav class="links">
+      <a href="https://joshkoppanalil.com/#about">About</a><a href="https://joshkoppanalil.com/#projects">Projects</a><a href="https://joshkoppanalil.com/allproj/">All projects</a><a href="https://joshkoppanalil.com/#contact">Contact</a>
     </nav>
+    <span class="clock">Austin <b id="clk">--:--</b></span>
+    <button class="menu" id="menu" aria-expanded="false">Menu</button>
   </div>
 </header>
 
-<div class="wrap">
+<div class="wrap" id="top">
   <section class="hero">
     <div>
-      <span class="eyebrow rise">JK Security · Password intelligence</span>
+      <span class="eyebrow rise"><span class="dot"></span>Cybersecurity · 100% in your browser <span class="new">v2</span></span>
       <h1 class="rise" style="animation-delay:.08s">Know how strong<br><span class="soft">your password</span> <span class="hl">really is.</span></h1>
       <p class="lead rise" style="animation-delay:.16s">Entropy, common-password and pattern detection, and crack-time estimates across four real attack models, plus a secure generator. It all runs locally in this tab.</p>
       <div class="hstats rise" style="animation-delay:.24s">
@@ -378,7 +383,7 @@ footer a:hover{color:var(--accent)}
   </section>
 </div>
 
-<footer><div class="wrap"><span>© <span id="year"></span> Josh Koppanalil · JK Security</span><a href="https://joshkoppanalil.com/">joshkoppanalil.com ↗</a></div></footer>
+<footer><div class="nav"><span>© Josh Koppanalil · JK Security</span><a href="#top" style="margin-left:auto">Back to top ↑</a></div></footer>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -389,7 +394,9 @@ footer a:hover{color:var(--accent)}
 'use strict';
 const $=id=>document.getElementById(id);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
-$('year').textContent=new Date().getFullYear();
+function tick(){try{$('clk').textContent=new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Chicago'}).format(new Date())}catch(_){}}
+tick();setInterval(tick,15000);
+$('menu').addEventListener('click',()=>{const o=$('hdr').classList.toggle('open');$('menu').setAttribute('aria-expanded',o)});
 
 /* ---------- data (local) ---------- */
 const COMMON=('password 123456 123456789 12345678 12345 qwerty 1234567 111111 1234567890 123123 abc123 1234 password1 iloveyou 1q2w3e4r 000000 qwerty123 zaq12wsx dragon sunshine princess letmein 654321 monkey 27653 1qaz2wsx 123321 qwertyuiop superman asdfghjkl trustno1 welcome admin master hello freedom whatever secret shadow football baseball basketball soccer hockey michael jordan jennifer ashley charlie thomas jessica daniel andrew joshua matthew robert william hunter killer batman starwars pokemon minecraft fortnite roblox naruto computer internet login access passw0rd p@ssw0rd changeme default guest root toor test tester pass pass123 love lovely loveme cookie chocolate cheese pepper ginger summer winter spring autumn flower orange banana apple purple yellow silver golden diamond angel angels babygirl baby blessed jesus christ god heaven family friend friends forever happy smile lucky money dollar cash rich mustang ferrari porsche harley corvette tigger buster tiger lion bear eagle falcon wolf dog cat puppy kitty bubbles maggie ginger samsung iphone google apple microsoft windows linux hacker matrix ninja pirate zombie gamer player games music guitar rock metal star stars moon sun sky blue red green black white orange pink mylove myname mypass hello123 welcome1 admin123 abcdef abcd qazwsx asdf zxcvbnm azerty letmein1 iloveu princess1 sunshine1 football1 charlie1 donald trump obama america usa texas austin chicago london paris spider spiderman ironman hulk thor marvel dc soccer1 jordan23 lebron kobe messi ronaldo').split(' ').filter((w,i,a)=>w.length>=3&&a.indexOf(w)===i);
