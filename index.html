@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#07080a">
+<meta name="theme-color" content="#0b1a2e">
 <meta name="description" content="Check how strong your password really is. Entropy, pattern detection, crack-time estimates and a secure generator, all running locally in your browser.">
-<title>JK Security · Password Strength</title>
+<title>Password Strength Checker · Josh Koppanalil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307080a'/%3E%3Ctext x='28' y='43' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='30' letter-spacing='-2' fill='%23f4f6f4'%3EJK%3C/text%3E%3Ccircle cx='52' cy='41' r='4' fill='%23b8f36b'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="https://joshkoppanalil.com/favicon.svg">
 <style>
-:root{--bg:#07080a;--panel:#0e0f12;--text:#f4f6f4;--muted:#a3a8a6;--dim:#6b706e;--line:rgba(255,255,255,.11);--line2:rgba(255,255,255,.17);--accent:#b8f36b;--c:#3a3d3c;--glass:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.02));--mx:50%;--my:20%}
+:root{--bg:#0b1a2e;--panel:#0f2239;--text:#f4f8fc;--muted:#8aa3bd;--dim:#5a7591;--line:rgba(255,255,255,.11);--line2:rgba(255,255,255,.17);--accent:#4fd1ff;--c:#3a3d3c;--glass:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.02));--mx:50%;--my:20%}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif;line-height:1.6;overflow-x:hidden}
 body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/28px 28px;-webkit-mask-image:radial-gradient(ellipse at 50% 10%,#000 25%,transparent 80%);mask-image:radial-gradient(ellipse at 50% 10%,#000 25%,transparent 80%)}
-body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(600px circle at var(--mx) var(--my),rgba(184,243,107,.06),transparent 60%)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(600px circle at var(--mx) var(--my),rgba(79,209,255,.06),transparent 60%)}
 .blob{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:-3;animation:drift 26s ease-in-out infinite alternate}
-.b1{width:520px;height:520px;background:#b8f36b;opacity:.11;top:-200px;right:-120px}
+.b1{width:520px;height:520px;background:#4fd1ff;opacity:.11;top:-200px;right:-120px}
 .b2{width:460px;height:460px;background:var(--c);opacity:.13;bottom:-220px;left:-160px;transition:background 1s;animation-duration:32s}
 @keyframes drift{to{transform:translate(-110px,90px) scale(1.15)}}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
-::selection{background:rgba(184,243,107,.3)}
+::selection{background:rgba(79,209,255,.3)}
 .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
 .wrap{width:min(1120px,calc(100% - 32px));margin:auto}
 
@@ -49,7 +49,7 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px) saturate(140%
 @media(max-width:860px){.hero{grid-template-columns:1fr;padding-top:44px}.vault{display:none}}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 10px;border:1px solid var(--line2);border-radius:99px;background:rgba(255,255,255,.03);color:var(--muted);font-size:13px}
 .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:ping 2s infinite}
-.eyebrow .new{padding:1px 7px;border-radius:99px;background:var(--accent);color:#10120b;font-size:11px;font-weight:700}
+.eyebrow .new{padding:1px 7px;border-radius:99px;background:var(--accent);color:#06121f;font-size:11px;font-weight:700}
 h1,h2,h3{font-family:"Space Grotesk",sans-serif;letter-spacing:-.055em;line-height:1.02}
 h1{font-size:clamp(44px,7.4vw,84px);margin:20px 0 18px}
 h1 .soft{color:#8d928f}
@@ -70,7 +70,7 @@ h1 .hl::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.0
 @keyframes spin{to{transform:rotate(360deg)}}
 .vault .shackle{animation:shk 4s ease-in-out infinite}
 @keyframes shk{0%,40%,100%{transform:translateY(0)}55%,80%{transform:translateY(-12px)}}
-.vault .glyph{font:700 13px "JetBrains Mono",monospace;fill:rgba(184,243,107,.55)}
+.vault .glyph{font:700 13px "JetBrains Mono",monospace;fill:rgba(79,209,255,.55)}
 
 /* main card */
 .card{position:relative;border:1px solid var(--line2);border-radius:24px;background:linear-gradient(180deg,rgba(18,20,17,.92),rgba(10,11,13,.95));padding:26px;box-shadow:0 40px 120px -40px color-mix(in srgb,var(--c) 45%,transparent),inset 0 1px 0 rgba(255,255,255,.08);transition:box-shadow 1s}
@@ -92,7 +92,7 @@ h1 .hl::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.0
 .ib svg{width:20px;height:20px}
 .eye .lid{transition:d .3s}
 .tiles{display:flex;flex-wrap:wrap;gap:5px;min-height:38px;margin-top:14px;padding:2px}
-.tile{position:relative;width:28px;height:34px;display:grid;place-items:center;border-radius:8px;background:color-mix(in srgb,var(--tc) 12%,#0c0d10);border:1px solid color-mix(in srgb,var(--tc) 35%,transparent);color:var(--tc);font:700 15px "JetBrains Mono",monospace}
+.tile{position:relative;width:28px;height:34px;display:grid;place-items:center;border-radius:8px;background:color-mix(in srgb,var(--tc) 12%,#0c1d33);border:1px solid color-mix(in srgb,var(--tc) 35%,transparent);color:var(--tc);font:700 15px "JetBrains Mono",monospace}
 .tile.new{animation:tpop .35s cubic-bezier(.3,1.6,.5,1)}
 @keyframes tpop{from{transform:scale(.3) translateY(8px);opacity:0}}
 .tile.seg::after{content:"";position:absolute;left:-3px;right:-3px;bottom:-6px;height:3px;border-radius:3px;background:var(--sc)}
@@ -142,7 +142,7 @@ h1 .hl::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.0
 @keyframes flash{30%{color:var(--c)}}
 .m .bar{height:4px;margin-top:12px;border-radius:9px;background:rgba(255,255,255,.07);overflow:hidden}
 .m .bar i{display:block;height:100%;width:0;background:var(--c);border-radius:inherit;transition:width .8s cubic-bezier(.2,.8,.2,1),background 1s}
-.tip{position:absolute;z-index:20;left:12px;right:12px;bottom:calc(100% + 8px);padding:11px 12px;border:1px solid var(--line2);border-radius:11px;background:#0d0e11;color:#d4d8d6;font-size:12px;line-height:1.5;box-shadow:0 18px 40px rgba(0,0,0,.55);animation:rise .25s both}
+.tip{position:absolute;z-index:20;left:12px;right:12px;bottom:calc(100% + 8px);padding:11px 12px;border:1px solid var(--line2);border-radius:11px;background:#0c1d33;color:#d4d8d6;font-size:12px;line-height:1.5;box-shadow:0 18px 40px rgba(0,0,0,.55);animation:rise .25s both}
 
 .box{border:1px solid var(--line);border-radius:16px;background:var(--glass),var(--panel);padding:20px 22px}
 .box h3{margin:0 0 4px;font-size:19px;letter-spacing:-.03em}
@@ -167,12 +167,12 @@ h1 .hl::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.0
 .chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
 .chk li{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);transition:color .3s}
 .chk li .cb{flex:none;width:20px;height:20px;border-radius:6px;border:1.5px solid #3b3f3d;display:grid;place-items:center;transition:.3s}
-.chk li .cb svg{width:12px;height:12px;stroke:#10120b;stroke-width:3;fill:none;stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset .35s .1s}
+.chk li .cb svg{width:12px;height:12px;stroke:#06121f;stroke-width:3;fill:none;stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset .35s .1s}
 .chk li.ok{color:var(--text)}
 .chk li.ok .cb{background:var(--accent);border-color:var(--accent);box-shadow:0 0 12px -2px var(--accent)}
 .chk li.ok .cb svg{stroke-dashoffset:0}
-.privacy{display:flex;gap:14px;align-items:center;margin-top:12px;padding:16px 20px;border-radius:16px;border:1px solid var(--line);background:radial-gradient(ellipse at top right,rgba(184,243,107,.09),transparent 60%),var(--panel)}
-.privacy .sh{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(184,243,107,.1);color:var(--accent)}
+.privacy{display:flex;gap:14px;align-items:center;margin-top:12px;padding:16px 20px;border-radius:16px;border:1px solid var(--line);background:radial-gradient(ellipse at top right,rgba(79,209,255,.09),transparent 60%),var(--panel)}
+.privacy .sh{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(79,209,255,.1);color:var(--accent)}
 .privacy .sh svg{width:22px;height:22px}
 .privacy strong{display:block;font-size:14px}
 .privacy span{color:var(--muted);font-size:12.5px}
@@ -194,9 +194,9 @@ h1 .hl::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.0
 @media(max-width:860px){.gen{grid-template-columns:1fr}}
 .tabs{display:inline-flex;padding:4px;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.25)}
 .tabs button{padding:8px 16px;border:0;border-radius:9px;background:none;color:var(--muted);font-weight:700;font-size:13px;cursor:pointer;transition:.25s}
-.tabs button.on{background:var(--accent);color:#10120b}
+.tabs button.on{background:var(--accent);color:#06121f}
 .out{position:relative;margin-top:16px;padding:22px 20px;border-radius:16px;border:1px solid var(--line2);background:#050608;min-height:96px;display:flex;align-items:center;overflow:hidden}
-.out::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(184,243,107,.08),transparent);transform:translateX(-100%)}
+.out::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(79,209,255,.08),transparent);transform:translateX(-100%)}
 .out.sweep::before{animation:sweep .9s ease-out}
 @keyframes sweep{to{transform:translateX(100%)}}
 #gout{font:700 clamp(17px,2.5vw,24px)/1.4 "JetBrains Mono",monospace;letter-spacing:.02em;word-break:break-all;position:relative}
@@ -209,30 +209,30 @@ h1 .hl::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.0
 .btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border:1px solid var(--line2);border-radius:12px;background:rgba(255,255,255,.03);color:var(--text);font-weight:700;font-size:14px;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s,background .2s}
 .btn:hover{border-color:var(--accent);transform:translateY(-1px)}
 .btn:active{transform:scale(.97)}
-.btn.go{background:var(--accent);border-color:var(--accent);color:#10120b;box-shadow:0 10px 30px -10px rgba(184,243,107,.6)}
+.btn.go{background:var(--accent);border-color:var(--accent);color:#06121f;box-shadow:0 10px 30px -10px rgba(79,209,255,.6)}
 .btn svg{width:16px;height:16px}
 .opt{display:flex;flex-direction:column;gap:14px}
 .sl label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
 .sl label b{color:var(--accent);font:700 15px "Space Grotesk",sans-serif}
 input[type=range]{width:100%;margin-top:8px;-webkit-appearance:none;appearance:none;height:6px;border-radius:9px;background:linear-gradient(90deg,var(--accent) var(--p,50%),rgba(255,255,255,.1) var(--p,50%));outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#f4f6f4;border:4px solid var(--accent);cursor:pointer;box-shadow:0 0 14px rgba(184,243,107,.6);transition:transform .2s}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#f4f8fc;border:4px solid var(--accent);cursor:pointer;box-shadow:0 0 14px rgba(79,209,255,.6);transition:transform .2s}
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
-input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#f4f6f4;border:4px solid var(--accent);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#f4f8fc;border:4px solid var(--accent);cursor:pointer}
 .tg{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;cursor:pointer;user-select:none}
 .tg input{display:none}
 .tg .sw{width:42px;height:24px;border-radius:99px;background:rgba(255,255,255,.1);position:relative;transition:background .25s;flex:none}
-.tg .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#f4f6f4;transition:transform .3s cubic-bezier(.3,1.5,.5,1)}
+.tg .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#f4f8fc;transition:transform .3s cubic-bezier(.3,1.5,.5,1)}
 .tg input:checked+.sw{background:var(--accent)}
-.tg input:checked+.sw::after{transform:translateX(18px);background:#10120b}
+.tg input:checked+.sw::after{transform:translateX(18px);background:#06121f}
 .sel{display:flex;gap:6px}
 .sel button{flex:1;height:36px;border:1px solid var(--line);border-radius:9px;background:none;color:var(--muted);font:700 14px "JetBrains Mono",monospace;cursor:pointer;transition:.2s}
-.sel button.on{border-color:var(--accent);color:var(--accent);background:rgba(184,243,107,.08)}
+.sel button.on{border-color:var(--accent);color:var(--accent);background:rgba(79,209,255,.08)}
 
 .how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:860px){.how{grid-template-columns:1fr}}
 .how .box{transition:transform .3s,border-color .3s}
 .how .box:hover{transform:translateY(-4px);border-color:var(--line2)}
-.how .ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:rgba(184,243,107,.1);color:var(--accent);margin-bottom:14px}
+.how .ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:rgba(79,209,255,.1);color:var(--accent);margin-bottom:14px}
 .how .ic svg{width:22px;height:22px}
 .how p{color:var(--muted);font-size:14px;margin:6px 0 0}
 .how code{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--accent)}
@@ -240,17 +240,19 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 footer{border-top:1px solid var(--line);margin-top:80px}
 footer .nav{height:auto;padding:22px 0;color:var(--dim);font-size:14px}
 footer a:hover{color:var(--accent)}
-.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);padding:10px 18px;border-radius:99px;background:var(--accent);color:#10120b;font-weight:700;font-size:14px;opacity:0;transition:.3s;z-index:90;pointer-events:none}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);padding:10px 18px;border-radius:99px;background:var(--accent);color:#06121f;font-weight:700;font-size:14px;opacity:0;transition:.3s;z-index:90;pointer-events:none}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}html{scroll-behavior:auto}}
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://joshkoppanalil.com/assets/blueprint.css">
 </head>
 <body>
 <div class="blob b1"></div><div class="blob b2"></div>
 
 <header id="hdr">
   <div class="nav">
-    <a class="logo" href="https://joshkoppanalil.com/">JK<i>.</i></a>
+    <a class="logo jk-logo" href="https://joshkoppanalil.com/" aria-label="Josh Koppanalil, home"><svg class="jk-mark" viewBox="0 0 64 64" aria-hidden="true"><rect x="1" y="1" width="62" height="62" rx="14" fill="#0b1a2e" stroke="#4fd1ff" stroke-opacity=".45"/><path d="M8 8h6M8 8v6M56 8h-6M56 8v6M8 56h6M8 56v-6M56 56h-6M56 56v-6" stroke="#4fd1ff" stroke-opacity=".5" stroke-width="1.5" fill="none"/><path d="M27 15v24a7.5 7.5 0 0 1-15 0" fill="none" stroke="#f4f8fc" stroke-width="5" stroke-linecap="round"/><path d="M27 33L46 15M33 27.3L46 49" fill="none" stroke="#4fd1ff" stroke-width="5" stroke-linecap="round"/><circle cx="33" cy="27.3" r="3.7" fill="#ff6b35"/></svg><span>Josh Koppanalil</span></a>
     <span class="crumb">/ <b>Password Strength</b></span>
     <nav class="links">
       <a href="https://joshkoppanalil.com/#about">About</a><a href="https://joshkoppanalil.com/#projects">Projects</a><a href="https://joshkoppanalil.com/allproj/">All projects</a><a href="https://joshkoppanalil.com/#contact">Contact</a>
@@ -275,18 +277,18 @@ footer a:hover{color:var(--accent)}
     <div class="vault" aria-hidden="true">
       <svg viewBox="0 0 320 320">
         <defs>
-          <radialGradient id="vg"><stop offset="0" stop-color="rgba(184,243,107,.25)"/><stop offset="1" stop-color="rgba(184,243,107,0)"/></radialGradient>
+          <radialGradient id="vg"><stop offset="0" stop-color="rgba(79,209,255,.25)"/><stop offset="1" stop-color="rgba(79,209,255,0)"/></radialGradient>
           <path id="tp" d="M160,160 m-128,0 a128,128 0 1,1 256,0 a128,128 0 1,1 -256,0"/>
         </defs>
         <circle cx="160" cy="160" r="150" fill="url(#vg)"/>
         <g class="spin3"><text class="glyph"><textPath href="#tp">ENTROPY · LENGTH · PATTERNS · PRIVACY · ENTROPY · LENGTH · PATTERNS · PRIVACY ·</textPath></text></g>
-        <g class="spin"><circle cx="160" cy="160" r="108" fill="none" stroke="rgba(184,243,107,.35)" stroke-width="2" stroke-dasharray="2 9"/></g>
-        <g class="spin2"><circle cx="160" cy="160" r="90" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="10" stroke-dasharray="40 14"/><circle cx="160" cy="70" r="5" fill="#b8f36b"/></g>
+        <g class="spin"><circle cx="160" cy="160" r="108" fill="none" stroke="rgba(79,209,255,.35)" stroke-width="2" stroke-dasharray="2 9"/></g>
+        <g class="spin2"><circle cx="160" cy="160" r="90" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="10" stroke-dasharray="40 14"/><circle cx="160" cy="70" r="5" fill="#4fd1ff"/></g>
         <circle cx="160" cy="160" r="66" fill="#0b0c0e" stroke="rgba(255,255,255,.12)"/>
         <g transform="translate(160 164)">
-          <path class="shackle" d="M-20 -14 V-30 a20 20 0 0 1 40 0 V-14" fill="none" stroke="#b8f36b" stroke-width="9" stroke-linecap="round"/>
-          <rect x="-32" y="-16" width="64" height="50" rx="12" fill="#b8f36b"/>
-          <circle cy="5" r="7" fill="#10120b"/><rect x="-3" y="6" width="6" height="14" rx="3" fill="#10120b"/>
+          <path class="shackle" d="M-20 -14 V-30 a20 20 0 0 1 40 0 V-14" fill="none" stroke="#4fd1ff" stroke-width="9" stroke-linecap="round"/>
+          <rect x="-32" y="-16" width="64" height="50" rx="12" fill="#4fd1ff"/>
+          <circle cy="5" r="7" fill="#06121f"/><rect x="-3" y="6" width="6" height="14" rx="3" fill="#06121f"/>
         </g>
       </svg>
     </div>
@@ -383,7 +385,7 @@ footer a:hover{color:var(--accent)}
   </section>
 </div>
 
-<footer><div class="nav"><span>© Josh Koppanalil · JK Security</span><a href="#top" style="margin-left:auto">Back to top ↑</a></div></footer>
+<footer><div class="nav"><span>© Josh Koppanalil · Password Strength Checker</span><a href="#top" style="margin-left:auto">Back to top ↑</a></div></footer>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -460,7 +462,7 @@ function estimate(pw){
   }
   return{n,cl,pool,raw,bits,segs,phrase,exact:segs.length===1&&segs[0].type==='word'&&segs[0].e-segs[0].s===n};
 }
-const LV=[['Very weak','#f87171','Guessable almost instantly. Attackers try passwords like this in the first few seconds.'],['Weak','#fb923c','Some effort went in, but predictable pieces make it much easier to crack than it looks.'],['Fair','#facc15','Decent, but a few more random characters or words would make it much stronger.'],['Strong','#b8f36b','Hard to crack. Good length and unpredictability.'],['Very strong','#4ade80','Excellent. Out of reach of large-scale guessing.']];
+const LV=[['Very weak','#f87171','Guessable almost instantly. Attackers try passwords like this in the first few seconds.'],['Weak','#fb923c','Some effort went in, but predictable pieces make it much easier to crack than it looks.'],['Fair','#facc15','Decent, but a few more random characters or words would make it much stronger.'],['Strong','#4fd1ff','Hard to crack. Good length and unpredictability.'],['Very strong','#4ade80','Excellent. Out of reach of large-scale guessing.']];
 const lvlOf=b=>b<28?0:b<40?1:b<60?2:b<80?3:4;
 const scoreOf=b=>{const P=[[0,0],[28,22],[40,42],[60,66],[80,86],[110,100]];for(let i=1;i<P.length;i++)if(b<=P[i][0]){const[a0,s0]=P[i-1],[a1,s1]=P[i];return Math.round(s0+(b-a0)/(a1-a0)*(s1-s0))}return 100};
 
@@ -504,7 +506,7 @@ function setV(id,t){const el=$(id);if(el.textContent!==t){el.textContent=t;el.cl
 let scr=0;
 function scramble(id,final){clearInterval(scr);const el=$(id);let k=0;if(RM){el.textContent=final;return}
   scr=setInterval(()=>{k++;el.textContent=final.replace(/[0-9]/g,()=>Math.floor(Math.random()*10));if(k>6){clearInterval(scr);el.textContent=final}},40)}
-function burst(col){const b=$('burst');if(RM)return;b.innerHTML=Array.from({length:26},(_,i)=>{const a=i/26*6.283+Math.random()*.3,r=90+Math.random()*60;return`<i style="--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px;--bc:${i%3?col:'#f4f6f4'};animation-delay:${Math.random()*80}ms"></i>`}).join('');setTimeout(()=>b.innerHTML='',1200)}
+function burst(col){const b=$('burst');if(RM)return;b.innerHTML=Array.from({length:26},(_,i)=>{const a=i/26*6.283+Math.random()*.3,r=90+Math.random()*60;return`<i style="--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px;--bc:${i%3?col:'#f4f8fc'};animation-delay:${Math.random()*80}ms"></i>`}).join('');setTimeout(()=>b.innerHTML='',1200)}
 
 function analyze(){
   const p=pw.value;$('clear').hidden=!p;
@@ -566,7 +568,7 @@ function analyze(){
   if(types2<3&&C.length<20)T.push('Mix in another character type (uppercase, number or symbol) somewhere in the middle, not just the end.');
   if(lvl>=3)T.push('Use it for one account only, and store it in a password manager.');
   if(lvl>=3)T.push('Turn on two-factor authentication too. It protects you even if this leaks.');
-  $('tips').innerHTML=T.slice(0,5).map((t,i)=>`<div class="f" style="--fc:${i<2&&lvl<3?'#facc15':'#b8f36b'};animation-delay:${i*50}ms"><span class="dt"></span><div>${t}</div></div>`).join('');
+  $('tips').innerHTML=T.slice(0,5).map((t,i)=>`<div class="f" style="--fc:${i<2&&lvl<3?'#facc15':'#4fd1ff'};animation-delay:${i*50}ms"><span class="dt"></span><div>${t}</div></div>`).join('');
   prevLvl=lvl;
 }
 pw.addEventListener('input',analyze);
